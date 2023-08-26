@@ -12,7 +12,8 @@ class AttendingTickets extends Component
     {
         $tickets = Tickets::whereHas('people')
         ->where('status', '=', 'b')
-        ->where('created_at','like', '%'. date('y-m-d') .'%')->get();
+        // ->where('created_at','like', '%'. date('y-m-d') .'%')->get();
+        ->get();
         return view('livewire.attending-tickets', compact('tickets'));
     }
 }

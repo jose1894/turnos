@@ -50,8 +50,14 @@
                                     <td>{{ $ticket->office->name }}</td>
                                     <td>{{ App\Models\Tickets::STATUSES[$ticket->status] }}</td>
                                     <td>
-                                        @if($ticket->status === 'a' || $ticket->status === 'b')
+                                        @if($ticket->status === 'a')
                                             <button wire:click="attend({{ $ticket->id }})" class="btn btn-primary btn-sm" data-placement="top" title="Atender">
+                                                <i class="fa fa-bullhorn"></i>
+                                            </button>
+                                        @endif
+
+                                        @if($ticket->status === 'b')
+                                            <button wire:click="recall({{ $ticket->id }})" class="btn btn-success btn-sm" data-placement="top" title="Llamar">
                                                 <i class="fa fa-bullhorn"></i>
                                             </button>
                                         @endif

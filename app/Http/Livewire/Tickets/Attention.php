@@ -33,17 +33,36 @@ class Attention extends Component
 
     public function attend($id)
     {
-        $office = auth()->guard()->user()->office_id;
-        $attendedTicket = Tickets::where('id',$id)->where('status', 'b')->where('office_id', $office)->get()->first();
-        $attendedTickets = Tickets::where('status', 'b')->where('office_id', $office)->get();
-        if($id){            
-            if ( sizeof($attendedTickets) <= 0 || !is_null($attendedTicket) ){
-                Tickets::where('id',$id)->update(['status' => 'b', 'attended' => Carbon::now()]);
-                session()->flash('message', ['type' => 'success', 'title'=> 'Ticket llamado']);
-                event(new NewMessage(json_encode(['process' => 'attend']),'attending-tickets'));
-                event(new NewMessage(json_encode(['process' => 'attend']),'tickets-list'));
+        $ticket = Tickets::find($id);
+        
+        $people = $ticket->people_id;
+
+        $otherOfficeTicket = Tickets::where('people_id', $people)->where('status', 'b');
+        
+        if ( $otherOfficeTicket->count() > 0){
+            session()->flash('message', ['type' => 'info', 'title'=> 'La persona ya esta asignada a un ticket en la oficina: '. $otherOfficeTicket->first()->office->name]);
+            $this->emit('refreshAttentionComponent');
+        } else {
+ 
+            $office = auth()->guard()->user()->office_id;
+            $attendedTicket = Tickets::where('id',$id)->where('status', 'b')->where('office_id', $office)->get()->first();
+            $attendedTickets = Tickets::where('status', 'b')->where('office_id', $office)->get();
+            if($id){            
+                if ( sizeof($attendedTickets) <= 0 || !is_null($attendedTicket) ){
+                    $ticket->update(['status' => 'b', 'attended' => Carbon::now()]);
+                    session()->flash('message', ['type' => 'success', 'title'=> 'Ticket llamado']);
+                    event(new NewMessage(json_encode(['process' => 'attend']),'attending-tickets'));
+                    event(new NewMessage(json_encode(['process' => 'attend']),'tickets-list'));
+                } 
             }
         }
+    }
+
+    public function recall($id){
+        $ticket = Tickets::find($id);
+        session()->flash('message', ['type' => 'info', 'title'=> 'Llamado nuevamente']);
+        event(new NewMessage(json_encode(['process' => 'attend']),'attending-tickets'));
+        $this->emit('refreshAttentionComponent');
     }
 
     public function openFinishModal($id){
@@ -93,15 +112,19 @@ class Attention extends Component
         $peopleType = People::PEOPLE_TYPE;
         $offices = Office::where('status','1')->get();
         $finishReasons = FinishReason::where('status','1')->get();
-        $tickets = Tickets::where( function($q1) use ($search){
+        $tickets = Tickets::orWhere( function($q1) use ($search){
                 return $q1->where('office_id', auth()->guard()->user()->office->id)
                         ->whereHas('people', function($q2) use($search){
                             return $q2->where('name', 'like', '%'.$search.'%')
                                         ->orWhere('lastname', 'like', '%'.$search.'%')
                                         ->orWhere('id_card', 'like', '%'.$search.'%');
-                        });
+                        })->whereDate('created_at', Carbon::today()->format('Y-m-d'));
         })
-        ->where('created_at','like', '%'. $search .'%')->orderBy('status', 'desc')->paginate();
+        ->orWhere(function($q){
+            return $q->where('status', 'b')
+            ->where('office_id', auth()->guard()->user()->office->id);
+        })
+        ->orderBy('status', 'desc')->paginate();
         return view('livewire.tickets.attention',compact('tickets', 'people', 'offices', 'peopleType', 'finishReasons'));
     }
 }
