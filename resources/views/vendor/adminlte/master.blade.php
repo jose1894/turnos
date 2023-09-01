@@ -88,7 +88,7 @@
     @else
         <script src="{{ mix(config('adminlte.laravel_mix_js_path', 'js/app.js')) }}"></script>
     @endif
-    @vite(['resources/css/app.css', 'resources/js/app.js']) 
+    @vite(['resources/js/app.js']) 
 
     {{-- Extra Configured Plugins Scripts --}}
     @include('adminlte::plugins', ['type' => 'js'])

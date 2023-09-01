@@ -17,11 +17,11 @@
     <script type="text/javascript">
         window.livewire.on('reasonStore', () => {
             setTimeout(() => {
-                $('#createReasonModal').modal('hide');
+                $('#createReasonModal .close-btn').trigger('click');
             }, 2500);
         });
         window.livewire.on('reasonUpdate', () => {
-            $('#updateReasonModal').modal('hide');
+            $('#updateReasonModal .close-btn').trigger('click');
         });
     </script>
 @stop

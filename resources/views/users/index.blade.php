@@ -22,23 +22,11 @@
     <script type="text/javascript">
         window.livewire.on('userStore', () => {
             setTimeout(() => {
-                $('#createUserModal').modal('hide');
+                $('#createUserModal .close-btn').trigger('click');
             }, 2500);
         });
         window.livewire.on('userUpdate', () => {
-            $('#updateUserModal').modal('hide');
+            $('#updateUserModal .close-btn').trigger('click');
         });
     </script>
-
-            <script type="module">
-                Echo.channel('office-{{ auth()->guard()->user()->office->id }}').listen('NewMessage', (e) => {
-                    console.log(JSON.parse(e.message))
-                    Livewire.emit('refreshAttentionComponent');
-                })
-
-
-                Echo.channel('home').listen('NewMessage', (e) => {
-                    console.log(JSON.parse(e.message))
-                })
-        </script>
 @stop

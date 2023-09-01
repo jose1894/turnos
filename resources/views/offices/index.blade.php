@@ -17,11 +17,11 @@
     <script type="text/javascript">
         window.livewire.on('officeStore', () => {
             setTimeout(() => {
-                $('#createOfficeModal').modal('hide');
+                $('#createOfficeModal .close-btn').trigger('click');
             }, 500);
         });
         window.livewire.on('officeUpdate', () => {
-            $('#updateOfficeModal').modal('hide');
+            $('#updateOfficeModal .close-btn').trigger('click');
         });
     </script>
 @stop

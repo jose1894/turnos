@@ -17,11 +17,11 @@
     <script type="text/javascript">
         window.livewire.on('peopleStore', () => {
             setTimeout(() => {
-                $('#createPeopleModal').modal('hide');
+                $('#createPeopleModal .close-btn').trigger('click');
             }, 2500);
         });
         window.livewire.on('peopleUpdate', () => {
-            $('#updatePeopleModal').modal('hide');
+            $('#updatePeopleModal .close-btn').trigger('click');
         });
     </script>
 @stop

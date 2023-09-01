@@ -302,26 +302,24 @@ return [
         ],
 
         // Sidebar items:
+//        [
+//            'type' => 'sidebar-menu-search',
+//            'text' => 'search',
+//        ],
         [
-            'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'header' => 'USUARIOS Y ROLES',
         ],
-        [
-            'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
-        ],
-        ['header' => 'USUARIOS Y ROLES'],
         [
             'text' => 'Roles',
-            'url'  => 'admin/blog',
+            'url'  => 'roles/',
             'icon' => 'fas fa-cog',
-            'can'  => 'manage-roles'
+            'can'  => 'roles-list'
         ],
         [
             'text' => 'Usuarios',
             'url'  => 'users/',
-            'icon' => 'fas fa-users'
+            'icon' => 'fas fa-users',
+            'can'  => 'users-list'
         ],
         ['header' => 'CONFIGURACIÓN'],
         [

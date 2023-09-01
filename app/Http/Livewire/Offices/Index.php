@@ -5,14 +5,20 @@ namespace App\Http\Livewire\Offices;
 use App\Models\Office;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Index extends Component
 {
-    use WithPagination;
+    use AuthorizesRequests, WithPagination;
     public $search;
     public $name, $type, $office_id, $status, $confirming;
     public $updateMode = false;
     protected $paginationTheme = 'bootstrap';
+
+    public function mount()
+    {
+        $this->authorize('office-list');
+    }
     
     public function updatingSearch(){
         $this->resetPage();

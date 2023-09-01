@@ -47,15 +47,15 @@
     <script type="text/javascript">
 
         window.livewire.on('peopleStore', () => {
-            $('#createPeopleModal').modal('hide');
+            $('#createPeopleModal .close-btn').trigger('click');
         });
         window.livewire.on('ticketStore', () => {
-            $('#createTicketModal').modal('hide');
+            $('#createPeopleModal .close-btn').trigger('click');
             $('#office').val(null).trigger('change.select2');
             $('#reason_id').val(null).trigger('change.select2');
         });
         window.livewire.on('ticketUpdate', () => {
-            $('#updateTicketModal').modal('hide');
+            $('#updateTicketModal .close-btn').trigger('click');
         });
     </script>
 @stop

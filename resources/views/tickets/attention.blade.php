@@ -7,7 +7,7 @@
 @section('title', 'Atencion')
 
 @section('content_header')
-    <h1>Atenci&oacute;n <b>{{ auth()->guard()->user()->office->name }}</b></h1>
+    <h1>Atenci&oacute;n <b>{{ auth()->guard()->user()->office->name ?? 'No tiene oficina asignada' }}</b></h1>
 @stop
 
 @section('content')
@@ -61,7 +61,8 @@ $(function () {
 })
 
   window.livewire.on('finishTicket', () => {
-          $('#finishTicketModal').modal('hide');
+          $('#finishTicketModal .close-btn').trigger('click');
+          
           $('#finish_reason_id').val(null).trigger('change.select2');
      
   });

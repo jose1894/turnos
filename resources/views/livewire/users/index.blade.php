@@ -33,6 +33,7 @@
                                 <th>Nombre</th>
                                 <th>Apellido</th>
                                 <th>Oficina</th>
+                                <th>Roles</th>
                                 <th>Email</th>
                                 <th></th>
                             </thead>
@@ -43,6 +44,14 @@
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->lastname }}</td>
                                     <td>{{ $user->office->name ?? 'SIN OFICINA ASIGNADA'}}</td>
+                                    <td>
+                                        @php
+                                            $roles = $user->getRoleNames();
+                                            foreach($roles as $role){
+                                                echo '<span class="badge badge-pill badge-info">'.$role.'</span>';
+                                            }
+                                        @endphp
+                                    </td>
                                     <td>{{ $user->email }}</td>
                                     <td width="10%">
                                         <button data-toggle="modal" data-target="#changePasswordModal" wire:click="showResetPasswordForm({{ $user->id }})" class="btn btn-success btn-sm">

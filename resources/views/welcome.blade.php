@@ -15,12 +15,12 @@
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
         <neta name="csrf-token" content="{{ csrf_token() }}" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-        @vite(['resources/css/app.css', 'resources/js/app.js']) 
+        @vite(['resources/js/app.js']) 
     </head>
-    <body class="antialiased" style="background:url('{{ asset('build/assets/imgs/bg3.jpg') }}')">
+    <body class="antialiased" style="background:url('{{ asset('imgs/bg3.jpg') }}')">
         <div class="container">
             <header class="mx-auto">
-                <img src="{{ asset('build/assets/imgs/banner_aprobado.jpg') }}">
+                <img src="{{ asset('imgs/banner_aprobado.jpg') }}">
             </header>
             <div class="row d-none">
                 @if (Route::has('login'))
@@ -51,8 +51,8 @@
                 Echo.channel('attending-tickets').listen('NewMessage', async (e) => {
                     const data = JSON.parse(e.message)
                     if (data.process === 'attend'){
-                        await playSound('{{asset('build/assets/audio/ding-dong.mp3')}}');
-                        await playSound('{{asset('build/assets/audio/ding-dong.mp3')}}');
+                        await playSound('{{asset('audio/ding-dong.mp3')}}');
+                        await playSound('{{asset('audio/ding-dong.mp3')}}');
                     }
                     
                     Livewire.emit('refreshAttendingTicketsComponent');

@@ -4,6 +4,7 @@ use App\Http\Controllers\FinishReasonController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\PeopleController;
 use App\Http\Controllers\ReasonController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\TicketsController;
 use App\Http\Controllers\UserController;
@@ -27,6 +28,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
+    Route::get('roles', [RoleController::class, 'index']);
     Route::resource('users', UserController::class)->names('users');
     Route::resource('offices', OfficeController::class)->names('offices');
     Route::resource('people', PeopleController::class)->names('people');
