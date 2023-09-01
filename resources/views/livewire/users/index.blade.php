@@ -2,10 +2,18 @@
     <div class="row">
         <div class="col-12 my-4">
             <div class="float-right">
-                @include('livewire.users.create')
+                @can('users-create')
+                <button type="button" class="btn btn-success" data-toggle="modal" wire:click="resetInputFields()" data-target="#createUserModal">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i> Crear usuario
+                </button>
+                @endcan
             </div>
         </div>
     </div>
+
+    @can('users-create')
+        @include('livewire.users.create')
+    @endcan
 
     <div>
         @if (session()->has('message'))
@@ -16,8 +24,13 @@
         @endif
     </div>
 
-    @include('livewire.users.update')
-    @include('livewire.users.change-password')
+    @can('users-create')
+        @include('livewire.users.update')
+    @endcan
+
+    @can('users-change-password')
+        @include('livewire.users.change-password')
+    @endcan
 
     <div class="row">
         <div class="col-12">
@@ -54,23 +67,29 @@
                                     </td>
                                     <td>{{ $user->email }}</td>
                                     <td width="10%">
-                                        <button data-toggle="modal" data-target="#changePasswordModal" wire:click="showResetPasswordForm({{ $user->id }})" class="btn btn-success btn-sm">
-                                            <i class="fa fa-asterisk" aria-hidden="true"></i>
-                                        </button>
+                                        @can('users-change-password')
+                                            <button data-toggle="modal" data-target="#changePasswordModal" wire:click="showResetPasswordForm({{ $user->id }})" class="btn btn-success btn-sm">
+                                                <i class="fa fa-asterisk" aria-hidden="true"></i>
+                                            </button>
+                                        @endcan
                                         
-                                        <button data-toggle="modal" data-target="#updateUserModal" wire:click="edit({{ $user->id }})" class="btn btn-primary btn-sm">
-                                            <i class="far fa-edit"></i>
-                                        </button>
+                                        @can('users-update')
+                                            <button data-toggle="modal" data-target="#updateUserModal" wire:click="edit({{ $user->id }})" class="btn btn-primary btn-sm">
+                                                <i class="far fa-edit"></i>
+                                            </button>
+                                        @endcan
 
-
-                                        @if($confirming===$user->id)
-                                            <button wire:click="kill({{ $user->id }})"
-                                                class="btn btn-danger btn-sm">Seguro?</button>
-                                        @else
-                                            <button wire:click="confirmDelete({{ $user->id }})" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                        @endif
+                                        
+                                        @can('users-delete')
+                                            @if($confirming===$user->id)
+                                                <button wire:click="kill({{ $user->id }})"
+                                                    class="btn btn-danger btn-sm">Seguro?</button>
+                                            @else
+                                                <button wire:click="confirmDelete({{ $user->id }})" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                            @endif
+                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach
@@ -88,8 +107,4 @@
             </div>
         </div>
     </div>
-    <script>
-    document.addEventListener('livewire:load', function () {
-    });
-    </script>
 </div>

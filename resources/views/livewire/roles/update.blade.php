@@ -37,7 +37,7 @@
                                         $permissions .= '
                                             <div class="form-check">
                                                 <label class="flex-fill">
-                                                    <input type="checkbox" id="permission-'.$value->id.'" wire:model.defer="selectedPermissions.'.$value->id.'" class="form-check-input">
+                                                    <input type="checkbox" name="'.$module['module'].'" id="permission-'.$value->id.'" wire:model.defer="selectedPermissions.'.$value->id.'" class="form-check-input">
                                                     '.$value->name.'
                                                 </label>
                                             </div>';

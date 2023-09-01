@@ -47,10 +47,10 @@
     <script type="text/javascript">
 
         window.livewire.on('peopleStore', () => {
-            $('#createPeopleModal .close-btn').trigger('click');
+            $('#createTicketModal .close-btn').trigger('click');
         });
         window.livewire.on('ticketStore', () => {
-            $('#createPeopleModal .close-btn').trigger('click');
+            $('#createTicketModal .close-btn').trigger('click');
             $('#office').val(null).trigger('change.select2');
             $('#reason_id').val(null).trigger('change.select2');
         });

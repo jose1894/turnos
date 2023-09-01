@@ -2,16 +2,22 @@
     <div class="row">
         <div class="col-12 my-4">
             <div class="float-right">
+                @can('roles-create')
                 <button type="button" class="btn btn-success" data-toggle="modal" wire:click="resetInputFields()" data-target="#createRoleModal">
                     <i class="fa fa-plus-circle" aria-hidden="true"></i> Crear rol
                 </button>
+                @endcan
             </div>
         </div>
     </div>
     
-    @include('livewire.roles.create')
+    @can('roles-create')
+        @include('livewire.roles.create')
+    @endcan
 
-    @include('livewire.roles.update')
+    @can('roles-update')
+        @include('livewire.roles.update')
+    @endcan
 
     <div>
         @if (session()->has('message'))
@@ -43,18 +49,23 @@
                                     <td>{{ $role->id }}</td>
                                     <td>{{ $role->name }}</td>
                                     <td>
-                                        <button data-toggle="modal" data-target="#updateRoleModal" wire:click="edit({{ $role->id }})" class="btn btn-primary btn-sm">
-                                            <i class="far fa-edit"></i>
-                                        </button>
+                                        @can('roles-update')
+                                            <button data-toggle="modal" data-target="#updateRoleModal" wire:click="edit({{ $role->id }})" class="btn btn-primary btn-sm">
+                                                <i class="far fa-edit"></i>
+                                            </button>
+                                        @endcan
 
-                                        @if($this->confirming===$role->id)
-                                            <button wire:click="kill({{ $role->id }})"
-                                                class="btn btn-danger btn-sm">Seguro?</button>
-                                        @else
-                                            <button wire:click="confirmDelete({{ $role->id }})" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                        @endif
+
+                                        @can('roles-delete')
+                                            @if($this->confirming===$role->id)
+                                                <button wire:click="kill({{ $role->id }})"
+                                                    class="btn btn-danger btn-sm">Seguro?</button>
+                                            @else
+                                                <button wire:click="confirmDelete({{ $role->id }})" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                            @endif
+                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach

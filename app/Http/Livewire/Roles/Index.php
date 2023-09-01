@@ -93,10 +93,8 @@ class Index extends Component
         $this->name = $role->name;
         $this->selectedPermissions = [];
         foreach($role->permissions as $key => $permission){
-            $this->selectedPermissions[$key] = $permission->id;
-        }
-
-        
+            $this->selectedPermissions[$permission->id] = 1;
+        }        
     }
 
     public function cancel()

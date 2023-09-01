@@ -1,7 +1,3 @@
-<button type="button" class="btn btn-success" data-toggle="modal" wire:click="resetInputFields()" data-target="#createUserModal">
-	<i class="fa fa-plus-circle" aria-hidden="true"></i> Crear usuario
-</button>
-
 <!-- Modal -->
 <div wire:ignore.self class="modal fade" id="createUserModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">

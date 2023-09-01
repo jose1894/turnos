@@ -44,7 +44,7 @@
                                     }
 
                                     $contents .= '
-                                        <div class="tab-pane fade '.(($tabSelected === $count) ? 'show active' : '').'" id="'.$module['module'].'" role="tabpanel" aria-labelledby="'.$module['module'].'-tab">
+                                        <div class="tab-pane fade '.(($tabSelected === $count) ? 'show active' : '').' mt-3" id="'.$module['module'].'" role="tabpanel" aria-labelledby="'.$module['module'].'-tab">
                                             '.$permissions.'
                                         </div>
                                     ';

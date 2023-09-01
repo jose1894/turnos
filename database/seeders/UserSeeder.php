@@ -25,6 +25,7 @@ class UserSeeder extends Seeder
             'password' =>  Hash::make('tsj4DM1N2023/#$.'), // password
             'remember_token' => Str::random(10),
             //'office_id' => Office::where('status',1)->inRandomOrder()->get()->first()->id,
+            'office_id' => 1,
         ]);
 
         $user->assignRole('Superadmin');

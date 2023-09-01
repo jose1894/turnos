@@ -7,7 +7,13 @@
 @stop
 
 @section('content')
-  @livewire('roles.index')
+    @can('roles-list')
+        @livewire('roles.index')
+    @endcan
+
+    @cannot('roles-list')
+        <h2>No tiene permisos para este m&oacute;dulo</h2>
+    @endcannot
 @stop
 
 @section('css')

@@ -23,7 +23,7 @@
         window.livewire.on('userStore', () => {
             setTimeout(() => {
                 $('#createUserModal .close-btn').trigger('click');
-            }, 2500);
+            }, 500);
         });
         window.livewire.on('userUpdate', () => {
             $('#updateUserModal .close-btn').trigger('click');
