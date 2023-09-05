@@ -44,9 +44,19 @@
                         @error('password') <span class="text-danger error">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
-                        <label for="password_c">Confirme password</label>
+                        <label for="password_confirmation">Confirme password</label>
                         <input type="password" class="form-control" id="password_confirmation" wire:model="password_confirmation" required>
                         @error('password_c') <span class="text-danger error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="rol">Rol</label>
+                        <select class="form-control" id="rol" style="width: 100%;" placeholder="Seleccione" wire:model="rol">
+                            <option>
+                            @foreach ($roles as $rol)
+                              <option value="{{$rol}}">{{$rol}} 
+                            @endforeach
+                          </select>
+                        @error('rol') <span class="text-danger error">{{ $message }}</span>@enderror
                     </div>
                 </form>
             </div>

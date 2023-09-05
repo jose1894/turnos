@@ -326,33 +326,39 @@ return [
             'text'        => 'Oficinas',
             'url'         => 'offices',
             'icon'        => 'fas fa-briefcase',
+            'can'         => 'offices-list',
             'label_color' => 'success',
         ],
         [
             'text'        => 'Personas',
             'url'         => 'people',
             'icon'        => 'fas fa-users',
+            'can'         => 'people-list',
         ],
         [
             'text'        => 'Motivos de atención',
             'url'         => 'reasons',
             'icon'        => 'fas fa-list',
+            'can'         => 'reason-list',
         ],
         [
             'text'        => 'Motivos de finalización',
             'url'         => 'finish-reasons',
             'icon'        => 'fas fa-bookmark',
+            'can'         => 'finish-reason-list',
         ],
         ['header' => 'TICKETS'],
         [
             'text'        => 'Recepción',
             'url'         => 'tickets',
             'icon'        => 'fas fa-ticket-alt',
+            'can'         => 'tickets-list',
         ],
         [
             'text'        => 'Atencion',
             'url'         => 'attention',
             'icon'        => 'fas fa-inbox',
+            'can'         => 'tickets-attention',
         ],
 
         // ['header' => 'account_settings'],
@@ -533,12 +539,12 @@ return [
                 [
                     'type' => 'css',
                     'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css',
+                    'location' => 'css/toastr.min.css',
                 ],
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => '//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js',
+                    'location' => 'js/toastr.min.js',
                 ],
             ]
         ],
@@ -548,12 +554,12 @@ return [
                 [
                     'type' => 'css',
                     'asset' => false,
-                    'location' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+                    'location' => 'css/select2.min.css',
                 ],
                 [
                     'type' => 'js',
                     'asset' => false,
-                    'location' => 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
+                    'location' => 'js/select2.min.js',
                 ],
             ]
         ]

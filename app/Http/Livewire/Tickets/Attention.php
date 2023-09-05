@@ -33,7 +33,7 @@ class Attention extends Component
 
     public function attend($id)
     {
-        $ticket = Tickets::find($id);
+        $ticket = Tickets::where('id',$id)->with(['people', 'office', 'reason'])->first();
         
         $people = $ticket->people_id;
 
@@ -53,15 +53,17 @@ class Attention extends Component
                     session()->flash('message', ['type' => 'success', 'title'=> 'Ticket llamado']);
                     event(new NewMessage(json_encode(['process' => 'attend']),'attending-tickets'));
                     event(new NewMessage(json_encode(['process' => 'attend']),'tickets-list'));
+                    event(new NewMessage(json_encode(['ticket' => $ticket]),'tickets-number'));
                 } 
             }
         }
     }
 
     public function recall($id){
-        $ticket = Tickets::find($id);
+        $ticket = Tickets::where('id',$id)->with(['people', 'office', 'reason'])->first();
         session()->flash('message', ['type' => 'info', 'title'=> 'Llamado nuevamente']);
         event(new NewMessage(json_encode(['process' => 'attend']),'attending-tickets'));
+        event(new NewMessage(json_encode(['ticket' => $ticket]),'tickets-number'));
         $this->emit('refreshAttentionComponent');
     }
 
@@ -88,6 +90,8 @@ class Attention extends Component
             Tickets::where('id',$id)->update(['status' => 'c', 'finish_reason_id' => $this->finish_reason_id, 'finished' => Carbon::now()]);
             session()->flash('message', ['type' => 'success', 'title'=> 'Ticket atendido exitosamente']);
             event(new NewMessage(json_encode(['ticket' => $this]),'attending-tickets'));
+            event(new NewMessage(json_encode(['process' => 'attend']),'tickets-list'));
+            event(new NewMessage(json_encode(['ticket' => true]),'tickets-number'));
             $this->emit('finishTicket');
             $this->emit('finishTicket');
             $this->clearFinish();

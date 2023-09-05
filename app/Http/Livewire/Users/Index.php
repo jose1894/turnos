@@ -7,11 +7,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Spatie\Permission\Models\Role;
 
 class Index extends Component
 {
     use WithPagination;
-    public $search,$name,$user_id, $lastname, $office_id, $email, $password, $confirming, $password_confirmation;
+    public $search,$name,$user_id, $lastname, $office_id, $email, $password, $confirming, $password_confirmation, $rol;
     public $updateMode = false;
     protected $paginationTheme = 'bootstrap';
 
@@ -26,6 +27,7 @@ class Index extends Component
         $this->password = '';
         $this->password_confirmation = '';
         $this->email = '';
+        $this->rol = '';
     }
 
     private function rules(){
@@ -36,6 +38,7 @@ class Index extends Component
                 'name' => 'required|string|min:3|max:30',
                 'lastname' => 'required|string|min:3|max:30',
                 'office_id' => 'nullable',
+                'rol' => 'required',
                 'email' => 'email|unique:users,id,'.$request->id,
             ];
         } else {
@@ -44,6 +47,7 @@ class Index extends Component
                 'lastname' => 'required|string|min:3|max:30',
                 'office_id' => 'nullable',
                 'email' => 'email|unique:users',
+                'rol' => 'required',
                 'password' => [
                     'required',
                     'min:6',
@@ -64,6 +68,7 @@ class Index extends Component
             'email.required' => 'El email es requerido',
             'email.unique' => 'El email ya está siendo utilizado',
             'password.required' => 'El password es requerido',
+            'rol.required' => 'El rol es requerido',
             'password.min' => 'El password debe tener al menos 6 caracteres',
             'password.regex' => 'El password debe tener caracteres de la A-Z, mayusculas y minusculas, al menos un numero, al menos un caracter especial (!$#%)',
             'password.confirmed' => 'El password debe coincidir',
@@ -77,8 +82,9 @@ class Index extends Component
         $rules = $this->rules();
         $validatedUser = $this->validate($rules['rules'], $rules['messages']);
 
-        User::create($validatedUser);
+        $user = User::create($validatedUser);
 
+        $user->assignRole($validatedUser['rol']);
         session()->flash('message', ['type' => 'success', 'title' => 'Usuario creado exitosamente']);
 
         $this->resetInputFields();
@@ -124,7 +130,7 @@ class Index extends Component
         $this->lastname = $user->lastname;
         $this->office_id = $user->office_id;
         $this->email = $user->email;
-
+        $this->rol = $user->getRoleNames()[0];
     }
 
     public function cancel(){
@@ -140,8 +146,9 @@ class Index extends Component
         $validatedUser = $this->validate($rules['rules'], $rules['messages']);
         
         if ($this->user_id) {
-            $people = User::find($this->user_id);
-            $people->update($validatedUser);
+            $user = User::find($this->user_id);
+            $user->update($validatedUser);
+            $user->syncRoles($validatedUser['rol']);
             $this->updateMode = false;
             session()->flash('message', ['type' => 'success', 'title'=> 'Usuario actualizado exitosamente']);
             $this->resetInputFields();
@@ -171,6 +178,7 @@ class Index extends Component
     {
         $search = $this->search;
         $offices = Office::where('status','1')->get();
+        $roles = Role::where ('name', '<>', 'Superadmin')->pluck('name', 'name')->all();
         $users = User::where('name', 'like', '%'.$search.'%')
         ->orWhere('lastname', 'like', "%".$search."%")
         ->orWhere('email', 'like', '%'. $search .'%')
@@ -178,6 +186,6 @@ class Index extends Component
             return $query->where('name', 'like', '%'.$search.'%');
         })
         ->paginate();
-        return view('livewire.users.index', compact('users', 'offices'));
+        return view('livewire.users.index', compact('users', 'offices', 'roles'));
     }
 }

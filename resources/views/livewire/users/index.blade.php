@@ -24,7 +24,7 @@
         @endif
     </div>
 
-    @can('users-create')
+    @can('users-update')
         @include('livewire.users.update')
     @endcan
 

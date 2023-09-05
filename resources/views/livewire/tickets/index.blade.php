@@ -12,19 +12,27 @@
 
     <div class="row">
         <div class="col-12 my-4">
-            <div class="float-right">
-                <a class="btn btn-success" data-toggle="modal" wire:click="resetInputFields()" href="#createTicketModal">
-                    <i class="fa fa-plus-circle" aria-hidden="true"></i> Crear ticket
-                </a>
-            </div>
+            @can('tickets-create')
+                <div class="float-right">
+                    <a class="btn btn-success" data-toggle="modal" wire:click="resetInputFields()" href="#createTicketModal">
+                        <i class="fa fa-plus-circle" aria-hidden="true"></i> Crear ticket
+                    </a>
+                </div>
+            @endcan
         </div>
     </div>
     
-    @include('livewire.tickets.create')
+    @can('tickets-create')
+        @include('livewire.tickets.create')
+    @endcan
 
-    @include('livewire.tickets.update')
+    @can('tickets-update')
+        @include('livewire.tickets.update')
+    @endcan
 
-    @include('livewire.people.create')
+    @can('people-create')
+        @include('livewire.people.create')
+    @endcan
 
     <div>
         @if (session()->has('message'))
@@ -66,19 +74,23 @@
                                     <td>{{ App\Models\Tickets::STATUSES[$ticket->status] }}</td>
                                     <td>
                                         @if ($ticket->status === 'a')
-                                            <button data-toggle="modal" data-target="#updateTicketModal" wire:click="edit({{ $ticket->id }})" class="btn btn-primary btn-sm">
-                                                <i class="far fa-edit"></i>
-                                            </button>
+                                            @can('tickets-update')
+                                                <button data-toggle="modal" data-target="#updateTicketModal" wire:click="edit({{ $ticket->id }})" class="btn btn-primary btn-sm">
+                                                    <i class="far fa-edit"></i>
+                                                </button>
+                                            @endcan
 
-                                            @if($confirming===$ticket->id)
-                                                <button wire:click="kill({{ $ticket->id }})"
-                                                    class="btn btn-danger btn-sm">Seguro?</button>
-                                            @else
-                                            {{-- @elseif ($ticket->status !== 'a' && $ticket->status !== 'b' && $ticket->status !== 'c') --}}
-                                                <button wire:click="confirmDelete({{ $ticket->id }})" class="btn btn-warning btn-sm">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                    </button>
-                                            @endif
+                                            @can('tickets-delete')
+                                                @if($confirming===$ticket->id)
+                                                    <button wire:click="kill({{ $ticket->id }})"
+                                                        class="btn btn-danger btn-sm">Seguro?</button>
+                                                @else
+                                                {{-- @elseif ($ticket->status !== 'a' && $ticket->status !== 'b' && $ticket->status !== 'c') --}}
+                                                    <button wire:click="confirmDelete({{ $ticket->id }})" class="btn btn-warning btn-sm">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                @endif
+                                            @endcan
                                         @endif
                                         
                                     </td>

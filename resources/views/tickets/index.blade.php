@@ -47,7 +47,7 @@
     <script type="text/javascript">
 
         window.livewire.on('peopleStore', () => {
-            $('#createTicketModal .close-btn').trigger('click');
+            $('#createPeopleModal .close-btn').trigger('click');
         });
         window.livewire.on('ticketStore', () => {
             $('#createTicketModal .close-btn').trigger('click');

@@ -10,7 +10,9 @@
         </div>
     @endif
 
-    @include('livewire.tickets.finalize')
+    @can('tickets-finish')
+        @include('livewire.tickets.finalize')
+    @endcan
 
     <div>
         @if (session()->has('message'))
@@ -50,32 +52,40 @@
                                     <td>{{ $ticket->office->name }}</td>
                                     <td>{{ App\Models\Tickets::STATUSES[$ticket->status] }}</td>
                                     <td>
-                                        @if($ticket->status === 'a')
-                                            <button wire:click="attend({{ $ticket->id }})" class="btn btn-primary btn-sm" data-placement="top" title="Atender">
-                                                <i class="fa fa-bullhorn"></i>
-                                            </button>
-                                        @endif
-
-                                        @if($ticket->status === 'b')
-                                            <button wire:click="recall({{ $ticket->id }})" class="btn btn-success btn-sm" data-placement="top" title="Llamar">
-                                                <i class="fa fa-bullhorn"></i>
-                                            </button>
-                                        @endif
-
-                                        @if($ticket->status === 'b')
-                                            <button wire:click="openFinishModal({{ $ticket->id }})" alt="Finalizar" class="btn btn-success btn-sm" data-placement="top" title="Finalizar" data-toggle="modal" data-target="#finishTicketModal">
-                                                <i class="fa fa-forward"></i>
-                                            </button>
-                                        @endif
-
-                                        @if($confirming===$ticket->id)
-                                            <button wire:click="kill({{ $ticket->id }})"
-                                                class="btn btn-danger btn-sm">Seguro?</button>
-                                        @elseif ($ticket->status !== 's' && $ticket->status !== 'a' && $ticket->status !== 'c')
-                                            <button wire:click="confirmDelete({{ $ticket->id }})" class="btn btn-warning btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
+                                        @can('tickets-attend')
+                                            @if($ticket->status === 'a')
+                                                <button wire:click="attend({{ $ticket->id }})" class="btn btn-primary btn-sm" data-placement="top" title="Atender">
+                                                    <i class="fa fa-bullhorn"></i>
                                                 </button>
-                                        @endif
+                                            @endif
+                                        @endcan
+
+                                        @can('tickets-recall')
+                                            @if($ticket->status === 'b')
+                                                <button wire:click="recall({{ $ticket->id }})" class="btn btn-success btn-sm" data-placement="top" title="Llamar">
+                                                    <i class="fa fa-bullhorn"></i>
+                                                </button>
+                                            @endif
+                                        @endcan
+                                        
+                                        @can('tickets-finish')
+                                            @if($ticket->status === 'b')
+                                                <button wire:click="openFinishModal({{ $ticket->id }})" alt="Finalizar" class="btn btn-success btn-sm" data-placement="top" title="Finalizar" data-toggle="modal" data-target="#finishTicketModal">
+                                                    <i class="fa fa-forward"></i>
+                                                </button>
+                                            @endif
+                                        @endcan
+
+                                        @can('tickets-disattend')
+                                            @if($confirming===$ticket->id)
+                                                <button wire:click="kill({{ $ticket->id }})"
+                                                    class="btn btn-danger btn-sm">Seguro?</button>
+                                            @elseif ($ticket->status !== 's' && $ticket->status !== 'a' && $ticket->status !== 'c')
+                                                <button wire:click="confirmDelete({{ $ticket->id }})" class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                            @endif
+                                        @endcan
                                     </td>
                                 </tr>
                                 @endforeach

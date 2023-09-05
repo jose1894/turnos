@@ -14,12 +14,13 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
         <neta name="csrf-token" content="{{ csrf_token() }}" />
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+        <link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
         @vite(['resources/js/app.js']) 
     </head>
     <body class="antialiased" style="background:url('{{ asset('imgs/bg3.jpg') }}')">
-        <div class="container">
-            <header class="mx-auto">
+        <audio id="audio" src="{{asset('audio/ding-dong.mp3')}}"></audio>
+        <div class="container-fluid">
+            <header class="mx-auto text-center">
                 <img src="{{ asset('imgs/banner_aprobado.jpg') }}">
             </header>
             <div class="row d-none">
@@ -43,20 +44,28 @@
         </div>
         <script type="module">
                 'use strict';
+                Echo.channel('tickets-number').listen('NewMessage', async (e) => {
+                    const data = JSON.parse(e.message)
+                    const ticket = data.ticket
+                    if (ticket === null){ 
+                        $("#ticket-called #number b").text('')
+                        $("#ticket-called #person b").text('')
+                        $("#ticket-called #reason b").text('')
+                    }
 
-
+                    if (ticket){ 
+                        $("#ticket-called #number b").text(ticket.ticket.toUpperCase())
+                        $("#ticket-called #person b").text(ticket.people.people_type.toUpperCase() + ' ' + ticket.people.id_card.toUpperCase() + ' ' + ticket.people.name.toUpperCase() + ' ' + ticket.people.lastname.toUpperCase())
+                        $("#ticket-called #reason b").text('MOTIVO: ' + ticket.reason.name.toUpperCase())
+                        playAudio('{{asset('audio/ding-dong.mp3')}}');
+                        //playSound('{{asset('audio/ding-dong.mp3')}}');                        
+                    }
+                })
                 Echo.channel('tickets-list').listen('NewMessage', (e) => {
                     Livewire.emit('refreshTicketsListComponent');
                 })
-                Echo.channel('attending-tickets').listen('NewMessage', async (e) => {
-                    const data = JSON.parse(e.message)
-                    if (data.process === 'attend'){
-                        await playSound('{{asset('audio/ding-dong.mp3')}}');
-                        await playSound('{{asset('audio/ding-dong.mp3')}}');
-                    }
-                    
+                Echo.channel('attending-tickets').listen('NewMessage', async (e) => {                    
                     Livewire.emit('refreshAttendingTicketsComponent');
-
                 })
 
                 
@@ -87,12 +96,18 @@
         </style>
         <!-- Livewire -->
         @livewireScripts
+        <script>
+            function playAudio(audioUrl){
+                let audio = new Audio(audioUrl)
+                audio.play()
+            }
+        </script>
 
         <!-- Optional JavaScript; choose one of the two! -->
 
         <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+        <script src="js/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
 
         <!-- Option 2: Separate Popper and Bootstrap JS -->
         <!--

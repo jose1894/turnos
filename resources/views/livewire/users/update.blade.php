@@ -38,6 +38,16 @@
                         <input type="email" class="form-control" id="email_edt" wire:model="email" required>
                         @error('email') <span class="text-danger error">{{ $message }}</span>@enderror
                     </div>
+                    <div class="form-group">
+                        <label for="rol">Rol</label>
+                        <select class="form-control" id="rol" style="width: 100%;" placeholder="Seleccione" wire:model="rol">
+                            <option>
+                            @foreach ($roles as $rol)
+                              <option value="{{$rol}}">{{$rol}} 
+                            @endforeach
+                          </select>
+                        @error('rol') <span class="text-danger error">{{ $message }}</span>@enderror
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">

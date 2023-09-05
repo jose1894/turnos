@@ -27,12 +27,11 @@ class PeopleSearchBox extends Component
             
             $this->records = People::orderby('lastname','asc')
                       ->where(function($q) {
-                        return $q->where('status', 1)
-                        ->orWhere('name','like','%'.$this->search.'%')
+                        return $q->where('name','like','%'.$this->search.'%')
                         ->orWhere('lastname','like','%'.$this->search.'%')
                         ->orWhere('id_card','like','%'.$this->search.'%');
                       })
-                      ->limit(5)
+                      ->where('status', 1)
                       ->get();
 
             $this->showdiv = true;

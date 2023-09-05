@@ -18,6 +18,7 @@ class TicketsPermissionSeeder extends Seeder
         Permission::create(['name' =>'tickets-read', 'module'=>'Tickets']);
         Permission::create(['name' =>'tickets-update', 'module'=>'Tickets']);
         Permission::create(['name' =>'tickets-delete', 'module'=>'Tickets']);
+        Permission::create(['name' =>'tickets-attention', 'module'=>'Tickets']);
         Permission::create(['name' =>'tickets-attend', 'module'=>'Tickets']);
         Permission::create(['name' =>'tickets-disattend', 'module'=>'Tickets']);
         Permission::create(['name' =>'tickets-recall', 'module'=>'Tickets']);

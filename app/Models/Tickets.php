@@ -35,6 +35,14 @@ class Tickets extends Model
         return $this->belongsTo(People::class);
     }
 
+    public function reason(){
+        return $this->belongsTo(Reason::class);
+    }
+
+    public function finishReason(){
+        return $this->belongsTo(FinishReason::class);
+    }
+
     public function user(){
         return $this->belongsTo(User::class);
     }
