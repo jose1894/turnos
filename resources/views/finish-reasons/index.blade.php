@@ -18,7 +18,7 @@
         window.livewire.on('finishReasonStore', () => {
             setTimeout(() => {
                 $('#createFinishReasonModal .close-btn').trigger('click');
-            }, 2500);
+            }, 500);
         });
         window.livewire.on('finisReasonUpdate', () => {
             $('#updateFinishReasonModal .close-btn').trigger('click');

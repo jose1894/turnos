@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name')->index();
             $table->string('lastname')->index();
             $table->enum('gender',['M', 'F'])->comments('M: Masculino, F: Femenino');
-            $table->string('people_type','1')->index();
+            $table->string('people_type','5')->index();
             $table->string('id_card',10)->index();
             $table->text('address');
             $table->integer('status');

@@ -141,9 +141,15 @@
                 @this.set('office_id', data);
             });
 
+            $('#reason_edt').on('change', function (e) {
+                var data = $('#reason_edt').select2("val");
+                @this.set('reason_id', data);
+            });
+
             Livewire.on('setSelect2Values', (record) => {
                 $('#people_edt').val(record.people_id).trigger('change.select2');
                 $('#office_edt').val(record.office_id).trigger('change.select2');
+                $('#reason_edt').val(record.reason_id).trigger('change.select2');
             });
             
         })

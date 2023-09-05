@@ -18,7 +18,7 @@
         window.livewire.on('peopleStore', () => {
             setTimeout(() => {
                 $('#createPeopleModal .close-btn').trigger('click');
-            }, 2500);
+            }, 500);
         });
         window.livewire.on('peopleUpdate', () => {
             $('#updatePeopleModal .close-btn').trigger('click');

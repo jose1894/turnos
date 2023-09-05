@@ -7,6 +7,8 @@
                 </div>
                 <div class="card-text">
                     <h3 class="text-center" style="font-size:45px; font-weight: bolder;">{{ $ticket->people->people_type .' '. $ticket->people->id_card .' '. $ticket->people->name .' ' . $ticket->people->lastname  }}</b></h3>
+                    <h3 class="text-center" style="font-size:40px; font-weight: bolder;">EXP N°: {{ $ticket->record }}</h3>
+                    <h3 class="text-center" style="font-size:40px; font-weight: bolder;">{{ $ticket->reason->name }}</h3>
                 </div>
             </div>
         </div>

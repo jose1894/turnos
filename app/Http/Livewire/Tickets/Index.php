@@ -34,6 +34,7 @@ class Index extends Component
         $this->ticket = '';
         $this->people_id= '';
         $this->office_id = '';
+        $this->reason_id = '';
         $this->comments = '';
         $this->record = '';
         $this->emit('resetSearchBoxField');
@@ -213,7 +214,7 @@ class Index extends Component
                         ->orWhere('lastname', 'like', '%'.$search.'%')
                         ->orWhere('id_card', 'like', '%'.$search.'%');
         })
-        ->orWhere('created_at','like', '%'. $search .'%')->paginate();
+        ->orWhere('created_at','like', '%'. $search .'%')->orderBy('created_at','desc')->paginate();
         return view('livewire.tickets.index', compact('tickets', 'people', 'offices', 'peopleType', 'reasons'));
     }
 

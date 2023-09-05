@@ -37,6 +37,18 @@
                         @error('office_id') <span class="text-danger error">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
+                      <label for="reason">Motivo</label>
+                      <div wire:ignore>
+                          <select class="form-control select2bs4" id="reason_edt" style="width: 100%;" placeholder="Seleccione" wire:model="reason_id">
+                            <option>
+                            @foreach ($reasons as $reason)
+                              <option value="{{$reason->id}}">{{$reason->name}} 
+                            @endforeach
+                          </select>
+                        </div>
+                        @error('reason_id') <span class="text-danger error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="form-group">
                         <label for="record">Expediente</label>
                         <input type="text" class="form-control" id="record" wire:model="record" required>
                         @error('record') <span class="text-danger error">{{ $message }}</span>@enderror
@@ -55,18 +67,3 @@
         </div>
     </div>
 </div>
-{{-- <script>
-  document.addEventListener('livewire:load', function () {
-     let people='{{ $people_id }}'
-    if (people){
-        $('#people_edt').val(people);
-        $('#people_edt').trigger('change');
-    }
-    
-    let office='{{ $office_id }}'
-    if (office){
-        $('#office_edt').val(office);
-        $('#office_edt').trigger('change');
-    }
-  })
-</script> --}}

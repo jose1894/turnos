@@ -11,9 +11,10 @@ class People extends Model
     use HasFactory, SoftDeletes;
 
     const PEOPLE_TYPE = [
+        'INPRE' => 'INPRE',
         'V' => 'Venezolano',
         'E' => 'Extranjero',
-        'P' => 'Pasaporte'
+        'P' => 'Pasaporte',
     ];
 
     protected $fillable = [

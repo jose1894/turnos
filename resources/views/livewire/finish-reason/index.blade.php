@@ -21,15 +21,6 @@
             </script>
         @endif
     </div>
-    
-    <div>
-        @if (session()->has('message'))
-            <script>
-                let msg = @json(session('message'));
-                toastr[msg.type](msg.title)
-            </script>
-        @endif
-    </div>
 
     <div class="row">
         <div class="col-12">

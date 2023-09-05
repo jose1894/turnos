@@ -57,7 +57,9 @@
                         $("#ticket-called #number b").text(ticket.ticket.toUpperCase())
                         $("#ticket-called #person b").text(ticket.people.people_type.toUpperCase() + ' ' + ticket.people.id_card.toUpperCase() + ' ' + ticket.people.name.toUpperCase() + ' ' + ticket.people.lastname.toUpperCase())
                         $("#ticket-called #reason b").text('MOTIVO: ' + ticket.reason.name.toUpperCase())
-                        playAudio('{{asset('audio/ding-dong.mp3')}}');
+                        $("#ticket-called #record b").text('EXP N°: ' + ticket.record.toUpperCase())
+                        await playAudio('{{asset('audio/ding-dong.mp3')}}');
+                        await playAudio('{{asset('audio/ding-dong.mp3')}}');
                         //playSound('{{asset('audio/ding-dong.mp3')}}');                        
                     }
                 })
