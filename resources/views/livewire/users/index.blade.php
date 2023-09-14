@@ -68,26 +68,33 @@
                                     <td>{{ $user->email }}</td>
                                     <td width="10%">
                                         @can('users-change-password')
-                                            <button data-toggle="modal" data-target="#changePasswordModal" wire:click="showResetPasswordForm({{ $user->id }})" class="btn btn-success btn-sm">
-                                                <i class="fa fa-asterisk" aria-hidden="true"></i>
-                                            </button>
+                                            @if($user->id != 1)
+                                                <button data-toggle="modal" data-target="#changePasswordModal" wire:click="showResetPasswordForm({{ $user->id }})" class="btn btn-success btn-sm">
+                                                    <i class="fa fa-asterisk" aria-hidden="true"></i>
+                                                </button>
+                                            @endif
                                         @endcan
+
                                         
                                         @can('users-update')
-                                            <button data-toggle="modal" data-target="#updateUserModal" wire:click="edit({{ $user->id }})" class="btn btn-primary btn-sm">
-                                                <i class="far fa-edit"></i>
-                                            </button>
+                                            @if($user->id != 1)
+                                                <button data-toggle="modal" data-target="#updateUserModal" wire:click="edit({{ $user->id }})" class="btn btn-primary btn-sm ">
+                                                    <i class="far fa-edit"></i>
+                                                </button>
+                                            @endif
                                         @endcan
 
                                         
                                         @can('users-delete')
-                                            @if($confirming===$user->id)
-                                                <button wire:click="kill({{ $user->id }})"
-                                                    class="btn btn-danger btn-sm">Seguro?</button>
-                                            @else
-                                                <button wire:click="confirmDelete({{ $user->id }})" class="btn btn-warning btn-sm">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                    </button>
+                                            @if($user->id != 1)
+                                                @if($confirming===$user->id)
+                                                    <button wire:click="kill({{ $user->id }})"
+                                                        class="btn btn-danger btn-sm">Seguro?</button>
+                                                @else
+                                                    <button wire:click="confirmDelete({{ $user->id }})" class="btn btn-warning btn-sm">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                @endif
                                             @endif
                                         @endcan
                                     </td>

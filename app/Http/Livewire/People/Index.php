@@ -23,7 +23,7 @@ class Index extends Component
                 'name' => 'required|min:2',
                 'lastname' => 'required|min:3',
                 'gender' => 'required|in:M,F',
-                'people_type' => ['required', 'in:V,E,P', Rule::unique('people')->where(function ($query) use ($request) {
+                'people_type' => ['required', 'in:V,E,P,INPRE', Rule::unique('people')->where(function ($query) use ($request) {
                     return $query->where('people_type', $request->people_type)
                     ->where('id_card', $request->id_card);
                 })->ignore($request->people_id)],
@@ -40,7 +40,7 @@ class Index extends Component
                 'name' => 'required|min:2',
                 'lastname' => 'required|min:3',
                 'gender' => 'required|in:M,F',
-                'people_type' => ['required', 'in:V,E,P', Rule::unique('people')->where(function ($query) use ($request) {
+                'people_type' => ['required', 'in:V,E,P,INPRE', Rule::unique('people')->where(function ($query) use ($request) {
                     return $query->where('people_type', $request->people_type)
                     ->where('id_card', $request->id_card);
                 })],

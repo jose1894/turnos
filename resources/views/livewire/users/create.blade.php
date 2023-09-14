@@ -53,7 +53,9 @@
                         <select class="form-control" id="rol" style="width: 100%;" placeholder="Seleccione" wire:model="rol">
                             <option>
                             @foreach ($roles as $rol)
-                              <option value="{{$rol}}">{{$rol}} 
+                                @if($rol != "Superadmin")
+                                    <option value="{{$rol}}">{{$rol}}
+                                @endif
                             @endforeach
                           </select>
                         @error('rol') <span class="text-danger error">{{ $message }}</span>@enderror

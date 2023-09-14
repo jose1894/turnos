@@ -17,7 +17,7 @@ class Index extends Component
 
     public function mount()
     {
-        $this->authorize('office-list');
+        $this->authorize('offices-list');
     }
     
     public function updatingSearch(){
