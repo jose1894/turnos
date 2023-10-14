@@ -10,5 +10,5 @@ class Office extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'type','status'];
+    protected $fillable = ['name', 'type','status', 'prosecutor'];
 }

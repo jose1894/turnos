@@ -1,6 +1,6 @@
 <!-- Modal -->
 <div wire:ignore.self wire:emit="refresh" class="modal fade" id="createTicketModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Crear Ticket</h5>
@@ -11,24 +11,38 @@
            <div class="modal-body">
                 
                 <form>                    
-                    @livewire('people.people-search-box')
-                    @error('people_id') <span class="text-danger error">{{ $message }}</span>@enderror
-                    <input type='hidden' class="form-control" wire:model="people_id">       
-                    <div class="form-group">
-                      <label for="office">Oficina</label>
-                      <div wire:ignore>
-                          <select class="form-control select2bs4" id="office" style="width: 100%;" placeholder="Seleccione" wire:model="office_id">
-                            <option>
-                            @foreach ($offices as $office)
-                              <option value="{{$office->id}}">{{$office->name}} 
-                            @endforeach
-                          </select>
-                        </div>
-                        @error('office_id') <span class="text-danger error">{{ $message }}</span>@enderror
+                    <div class="row">
+                      <div class="form-group col-12 col-md-6">
+                          <label for="record">Expediente</label>
+                          <input type="text" class="form-control" id="record" wire:model="record" maxlength="45" required>
+                          @error('record') <span class="text-danger error">{{ $message }}</span>@enderror
+                      </div>
+
+                      <div class="form-group col-12 col-md-6">
+                        <label>
+                          Abogado(a)
+                        </label>
+                        @livewire('people.people-search-box')
+                        @error('people_id') <span class="text-danger error">{{ $message }}</span>@enderror
+                        <input type='hidden' class="form-control" wire:model="people_id">
+                      </div>
                     </div>
-                    <div class="form-group">
-                      <label for="reason">Motivo</label>
-                      <div wire:ignore>
+                    <div class="row">
+                      <div class="form-group col-12 col-md-6">
+                        <label for="office">Oficina</label>
+                        <div wire:ignore>
+                            <select class="form-control select2bs4" id="office" style="width: 100%;" placeholder="Seleccione" wire:model="office_id">
+                              <option>
+                              @foreach ($offices as $office)
+                                <option value="{{$office->id}}">{{$office->name}} 
+                              @endforeach
+                            </select>
+                          </div>
+                          @error('office_id') <span class="text-danger error">{{ $message }}</span>@enderror
+                      </div>
+                      <div class="form-group col-12 col-md-6">
+                        <label for="reason">Motivo</label>
+                        <div wire:ignore>
                           <select class="form-control select2bs4" id="reason_id" style="width: 100%;" placeholder="Seleccione" wire:model="reason_id">
                             <option>
                             @foreach ($reasons as $reason)
@@ -37,17 +51,59 @@
                           </select>
                         </div>
                         @error('reason_id') <span class="text-danger error">{{ $message }}</span>@enderror
+                      </div>
                     </div>
-                    <div class="form-group">
-                        <label for="record">Expediente</label>
-                        <input type="text" class="form-control" id="record" wire:model="record" maxlength="15" required>
-                        @error('record') <span class="text-danger error">{{ $message }}</span>@enderror
+                    <div class="row">
+                      <div class="col-12">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <td width="90%"><label>Inputado/V&iacute;ctima/Relacionado</label></td>
+                              <td>
+                                <button 
+                                  class="btn btn-sm btn-outline-success" 
+                                  wire:click.prevent="addAccused">+ Agregar
+                                </button>
+                              </td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @foreach ($accuseds as $index => $accused)
+                              <tr>
+                                <td>
+                                    <div wire:ignore>
+                                      <select 
+                                        class="form-control select2bs4 accuseds" 
+                                        id="accuseds.{{$index}}.people_id" 
+                                        style="width: 100%;" 
+                                        placeholder="Seleccione" 
+                                        wire:model="accuseds.{{$index}}.people_id"
+                                        name="accuseds[{{$index}}][people_id]">
+                                        <option>
+                                        @foreach ($people as $person)
+                                          <option value="{{$person->id}}">{{$person->people_type.$person->id_card}}-{{$person->name}} {{$person->lastname}}
+                                        @endforeach
+                                      </select>
+                                       @error('accuseds.{{$index}}.person_id') <span class="text-danger error">{{ $message }}</span>@enderror
+                                    </div>
+                                </td>
+                                <td>
+                                  <button class="btn btn-outline-danger" wire:click.prevent="removeAccused({{$index}})">Borrar</button>
+                                </td>
+                              </tr>
+                            @endforeach
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                    <div class="form-group">
-                        <label for="">Observaciones</label>
-                        <textarea class="form-control" wire:model="comments"></textarea>
-                        @error('comments') <span class="text-danger error">{{ $message }}</span>@enderror
+                    <div class="row">
+                      <div class="form-group col-12">
+                          <label for="">Observaciones</label>
+                          <textarea class="form-control" wire:model="comments"></textarea>
+                          @error('comments') <span class="text-danger error">{{ $message }}</span>@enderror
+                      </div>
                     </div>
+
                 </form>
                 
             </div>

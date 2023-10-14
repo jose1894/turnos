@@ -37,8 +37,6 @@
             letter-spacing: 1px;
         } --}}
     </style>
-
-    <label for="people_id">Persona</label>
     <div class="input-group">
         <input type='text' class="form-control" wire:model="search" wire:keyup="searchResult">
         <div class="input-group-append">

@@ -177,7 +177,7 @@ class Index extends Component
     public function render()
     {
         $search = $this->search;
-        $offices = Office::where('status','1')->get();
+        $offices = Office::where('status','1')->where('prosecutor', 'N')->get();
         $roles = Role::where ('name', '<>', 'Superadmin')->pluck('name', 'name')->all();
         $users = User::where('name', 'like', '%'.$search.'%')
         ->orWhere('lastname', 'like', "%".$search."%")

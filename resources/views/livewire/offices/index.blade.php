@@ -47,6 +47,7 @@
                                 <th>#</th>
                                 <th>Nombre</th>
                                 <th>Tipo</th>
+                                <th>Oficina de fiscal&iacute;a</th>
                                 <th>Status</th>
                                 <th width="8%"></th>
                             </thead>
@@ -55,7 +56,8 @@
                                 <tr>
                                     <td>{{ $office->id }}</td>
                                     <td>{{ $office->name }}</td>
-                                    <td>{{ $office->type == '1' ? 'Control' : 'Jurídico'}}</td>
+                                    <td>{{ $office->type == '1' ? 'Control' : ($office->type == '2' ? 'Jurídico' : 'No definido')}}</td>
+                                    <td>{{ $office->prosecutor == 'S' ? 'Sí' : 'No' }}</td>
                                     <td>{{ $office->status == 1 ? 'Activo' : 'Inactivo' }}</td>
                                     <td>
                                         <button data-toggle="modal" data-target="#updateOfficeModal" wire:click="edit({{ $office->id }})" class="btn btn-primary btn-sm">

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreign('finish_reason_id')->references('id')->on('finish_reasons')->onDelete('cascade');
             $table->unsignedBigInteger('user_id')->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('record',15)->index();
+            $table->string('record',30)->index();
             $table->enum('status',['a','b','c','i'])->comment('a: Sin atenter,b: Atendiendo, c: Atendido, i: Anulado')->default('a');
             $table->text('comments');
             $table->datetime('attended')->nullable();

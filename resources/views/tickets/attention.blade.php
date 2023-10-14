@@ -50,7 +50,7 @@
 @section('js')
 
 <script type="module">
-      Echo.channel('office-{{ auth()->guard()->user()->office->id }}').listen('NewMessage', (e) => {
+      Echo.channel('office-{{ auth()->guard()->user()->office->id ?? null }}').listen('NewMessage', (e) => {
         Livewire.emit('refreshAttentionComponent');
       })
 </script>

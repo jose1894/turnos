@@ -26,6 +26,15 @@
                         @error('type') <span class="text-danger error">{{ $message }}</span>@enderror
                     </div>
                     <div class="form-group">
+                        <label for="">Oficina de Fiscal&iacute;a</label>
+                        <select name="fiscalia" class="form-control" placeholder="Seleccione" wire:model="prosecutor">
+                          <option>
+                          <option value="N">NO
+                          <option value="S">S&Iacute;
+                        </select>
+                        @error('prosecutor') <span class="text-danger error">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="form-group">
                         <label for="exampleFormControlInput2">Estatus</label>
                         <select name="status" class="form-control" placeholder="Seleccione" wire:model="status">
                           <option>

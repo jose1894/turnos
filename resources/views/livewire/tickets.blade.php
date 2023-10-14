@@ -14,7 +14,7 @@
                         <h1 id="number" class="text-center" style="font-size: 55px;font-weight: bolder;"><b></b><h1>                            
                         <h3 id="person" class="text-center" style="font-size: 50px;font-weight: bolder;"><b></b></h3>
                         <h3 id="reason" class="text-center"><b></b></h3>
-                        <!--h3 id="record" class="text-center"><b></b></h3-->
+                        <h3 id="record" class="text-center"><b></b></h3>
                     </div>
                 </div>
             </div>
@@ -32,7 +32,7 @@
     <style>
         #ticket-called{
             width: 100%;
-            height: 13em;
+            height: 14em;
             margin: 0 auto;
             overflow: hidden;
             position: relative;

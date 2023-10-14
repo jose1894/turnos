@@ -58,7 +58,8 @@
                                 <th>#</th>
                                 <th>Fecha</th>
                                 <th>Ticket</th>
-                                <th>Persona</th>
+                                <th>Expediente</th>
+                                <th>Abogado(a)</th>
                                 <th>Oficina</th>
                                 <th>Status</th>
                                 <th width="8%"></th>
@@ -69,7 +70,14 @@
                                     <td>{{ $ticket->id }}</td>
                                     <td>{{ \Carbon\Carbon::parse($ticket->created_at)->format('d/m/Y h:i:s' ) }}</td>
                                     <td>{{ $ticket->ticket }}</td>
-                                    <td>{{ $ticket->people->people_type .' '. $ticket->people->id_card .' '. $ticket->people->name . ' ' . $ticket->people->lastname }}</td>
+                                    <td>{{ $ticket->record }}</td>
+                                    <td>
+                                        @if ($ticket->people)
+                                            {{ $ticket->people->people_type .' '. $ticket->people->id_card .' '. $ticket->people->name . ' ' . $ticket->people->lastname }}
+                                        @else
+                                            No asignado(a)
+                                        @endif
+                                    </td>
                                     <td>{{ $ticket->office->name }}</td>
                                     <td>{{ App\Models\Tickets::STATUSES[$ticket->status] }}</td>
                                     <td>
@@ -113,7 +121,10 @@
 
     <script>
         document.addEventListener('livewire:load', function () {
-            $('select').select2()
+            $('select').select2({
+                placeholder: "Seleccione",
+                allowClear: true
+            })
             {{-- $('#office').select2() --}}
 
             $('#people').on('change', function (e) {
@@ -124,6 +135,16 @@
             $('#office').on('change', function (e) {
                 var data = $('#office').select2("val");
                 @this.set('office_id', data);
+            });
+
+            $('body').on('change','.accuseds', function (e) { 
+                var data = $(this).select2("val");
+                @this.set(this.id, data);
+            });
+
+            $('body').on('change','.accuseds-edt', function (e) { 
+                var data = $(this).select2("val");
+                @this.set(this.id, data);
             });
 
             $('#reason_id').on('change', function (e) {
@@ -150,6 +171,12 @@
                 $('#people_edt').val(record.people_id).trigger('change.select2');
                 $('#office_edt').val(record.office_id).trigger('change.select2');
                 $('#reason_edt').val(record.reason_id).trigger('change.select2');
+                
+                $.each(record.accuseds, function(index, value){
+                    let element = document.querySelector('.accuseds-edt-'+index+'-people_id')
+                    $(element).val(value.people_id).trigger('change.select2');
+                    $(element).select2();
+                })
             });
             
         })

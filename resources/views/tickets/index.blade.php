@@ -57,5 +57,24 @@
         window.livewire.on('ticketUpdate', () => {
             $('#updateTicketModal .close-btn').trigger('click');
         });
+
+        window.livewire.on('applySelect2', () => {
+            const accuseds = document.querySelector('.accuseds')
+            $('.select2bs4').select2({
+                placeholder: "Seleccione",
+                allowClear: true
+            });
+            $(accuseds).select2();
+        });
+
+        window.livewire.on('reApplySelect2', (index, updateMode) => {
+            if (updateMode){
+                let element = document.querySelector('.accuseds-edt-'+index+'-people_id')
+                $(element).select2();
+            }else{
+                let element = document.getElementById('accuseds.'+index+'.people_id')
+                $(element).select2();
+            }
+        });
     </script>
 @stop

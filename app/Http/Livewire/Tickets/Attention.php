@@ -18,9 +18,10 @@ class Attention extends Component
     use WithPagination;
     protected $paginationTheme = 'bootstrap';
     public $search;
-    public $ticket_id, $finish_reason_id, $confirming;
+    public $ticket_id, $finish_reason_id, $confirming, $finish_comment;
     public $name, $lastname,$gender,$people_type,$id_card,$address, $status;
     public $updateMode = false;
+    public $people, $peopleType, $offices, $finishReasons, $officeUser;
     protected $listeners = ['refreshAttentionComponent' => '$refresh'];
 
     public function disattend($id)
@@ -33,7 +34,7 @@ class Attention extends Component
 
     public function attend($id)
     {
-        $ticket = Tickets::where('id',$id)->with(['people', 'office', 'reason'])->first();
+        $ticket = Tickets::where('id',$id)->with(['people', 'office', 'reason', 'accused.people'])->first();
         
         $people = $ticket->people_id;
 
@@ -60,7 +61,7 @@ class Attention extends Component
     }
 
     public function recall($id){
-        $ticket = Tickets::where('id',$id)->with(['people', 'office', 'reason'])->first();
+        $ticket = Tickets::where('id',$id)->with(['people', 'office', 'reason', 'accused.people'])->first();
         session()->flash('message', ['type' => 'info', 'title'=> 'Llamado nuevamente']);
         event(new NewMessage(json_encode(['process' => 'attend']),'attending-tickets'));
         event(new NewMessage(json_encode(['ticket' => $ticket]),'tickets-number'));
@@ -74,20 +75,23 @@ class Attention extends Component
 
     public function clearFinish(){
         $this->ticket_id = '';
+        $this->finish_comment = '';
         $this->finish_reason_id = '';
     }
 
     public function finish($id)
     {
         $this->validate([
-            'finish_reason_id' => ['required','numeric']
+            'finish_reason_id' => ['required','numeric'],
+            'finish_comment' => ['required','sometimes']
         ],
         [
             'finish_reason_id.required' => 'El motivo de finalización es requerido',
+            'finish_comment.required' => 'Los comentarios finales son requeridos',
         ]);
 
         if($id){
-            Tickets::where('id',$id)->update(['status' => 'c', 'finish_reason_id' => $this->finish_reason_id, 'finished' => Carbon::now()]);
+            Tickets::where('id',$id)->update(['status' => 'c', 'finish_reason_id' => $this->finish_reason_id, 'finish_comment' => $this->finish_comment, 'finished' => Carbon::now()]);
             session()->flash('message', ['type' => 'success', 'title'=> 'Ticket atendido exitosamente']);
             event(new NewMessage(json_encode(['ticket' => $this]),'attending-tickets'));
             event(new NewMessage(json_encode(['process' => 'attend']),'tickets-list'));
@@ -108,27 +112,36 @@ class Attention extends Component
         $this->disattend($id);
     }
 
+    public function mount(){
+        $this->people = People::where('status','1')->get();
+        $this->peopleType = People::PEOPLE_TYPE;
+        $this->offices = Office::where('status','1')->get();
+        $this->finishReasons = FinishReason::where('status','1')->get();
+        $this->officeUser = auth()->guard()->user()->office->id ?? null;
+    }
+
     
     public function render()
     {
         $search = $this->search;
-        $people = People::where('status','1')->get();
-        $peopleType = People::PEOPLE_TYPE;
-        $offices = Office::where('status','1')->get();
-        $finishReasons = FinishReason::where('status','1')->get();
-        $tickets = Tickets::orWhere( function($q1) use ($search){
-                return $q1->where('office_id', auth()->guard()->user()->office->id)
-                        ->whereHas('people', function($q2) use($search){
+        $officeUser = $this->officeUser;
+        $tickets = Tickets::orWhere( function($q1) use ($search, $officeUser){
+                return $q1
+                        ->when(!empty($officeUser),function($query) use ($officeUser) {
+                            return $query->where('office_id', $officeUser);
+                        })
+                        ->with('people', function($q2) use($search){
                             return $q2->where('name', 'like', '%'.$search.'%')
                                         ->orWhere('lastname', 'like', '%'.$search.'%')
                                         ->orWhere('id_card', 'like', '%'.$search.'%');
                         })->whereDate('created_at', Carbon::today()->format('Y-m-d'));
         })
-        ->orWhere(function($q){
-            return $q->where('status', 'b')
-            ->where('office_id', auth()->guard()->user()->office->id);
+        ->orWhere(function($q) use ($officeUser){
+            return $q->where('status', 'b')->when( $officeUser, function ($query){
+                return $query->where('office_id', auth()->guard()->user()->office->id);
+            });
         })
         ->orderBy('status', 'desc')->paginate();
-        return view('livewire.tickets.attention',compact('tickets', 'people', 'offices', 'peopleType', 'finishReasons'));
+        return view('livewire.tickets.attention',compact('tickets'));
     }
 }

@@ -11,7 +11,7 @@ class Index extends Component
 {
     use AuthorizesRequests, WithPagination;
     public $search;
-    public $name, $type, $office_id, $status, $confirming;
+    public $name, $type, $office_id, $status, $confirming, $prosecutor;
     public $updateMode = false;
     protected $paginationTheme = 'bootstrap';
 
@@ -27,6 +27,7 @@ class Index extends Component
     public function resetInputFields(){
         $this->name = '';
         $this->type = '';
+        $this->prosecutor = 'N';
         $this->status = 1;
     }
 
@@ -34,8 +35,9 @@ class Index extends Component
     {
         $validationRules = [
             'name' => 'required|unique:offices|min:5|max:20',
-            'type' => 'required|numeric',
-            'status' => 'required|numeric',
+            'type' => 'required_without:prosecutor|numeric',
+            'status' => 'required|numeric',            
+            'prosecutor' => 'required_without:type',
         ];
 
         $validationMessages = [
@@ -43,11 +45,17 @@ class Index extends Component
             'type.required' => 'El tipo es requerido',
             'status.required' => 'El estado es requerido',
             'name.unique' => 'El nombre ya ha sido usado',
+            'prosecutor.required' => 'Fiscalia es requerido',
         ];
 
-        $validatedOffice = $this->validate($validationRules, $validationMessages);
-        
-        Office::create($validatedOffice);
+        $this->validate($validationRules, $validationMessages);
+        dd($this->prosecutor);
+        Office::create([
+            'name' => $this->name,
+            'type' => $this->type,
+            'status' => $this->status,
+            'prosecutor' => $this->prosecutor ?? NULL,
+        ]);
 
         session()->flash('message', ['type' => 'success', 'title'=> 'Oficina creada exitosamente']);
 
@@ -76,8 +84,9 @@ class Index extends Component
     {
         $validationRules = [
             'name' => 'required|min:5|max:20|unique:offices,name,'.$this->office_id,
-            'type' => 'required|numeric',
+            'type' => 'required_without:prosecutor',
             'status' => 'required|numeric',
+            'prosecutor' => 'required_without:type',
         ];
 
         $validationMessages = [
@@ -85,18 +94,18 @@ class Index extends Component
             'type.required' => 'El tipo es requerido',
             'status.required' => 'El estado es requerido',
             'name.unique' => 'El nombre ya ha sido usado',
+            'prosecutor.required' => 'Fiscalia es requerido',
         ];
 
-        $validatedOffice = $this->validate($validationRules, $validationMessages);
-        
+        $this->validate($validationRules, $validationMessages);
 
         if ($this->office_id) {
             $office = Office::find($this->office_id);
-            $office->update([
-                'name' => $this->name,
-                'type' => $this->type,
-                'status' => $this->status,
-            ]);
+            $office->name = $this->name;
+            $office->type = $this->type ?? NULL;
+            $office->status = $this->status;
+            $office->prosecutor = $this->prosecutor ?? NULL;
+            $office->update();
             $this->updateMode = false;
             session()->flash('message', ['type' => 'success', 'title'=> 'Oficina actualizada exitosamente']);
             $this->emit('officeUpdate'); // Close model to using to jquery

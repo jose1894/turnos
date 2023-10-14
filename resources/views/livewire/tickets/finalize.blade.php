@@ -23,6 +23,14 @@
                         </div>
                         @error('finish_reason_id') <span class="text-danger error">{{ $message }}</span>@enderror
                     </div>
+                    <div class="form-group">
+                      <label for="finish_comment">Comentarios finales</label>
+                      <div wire:ignore>
+                          <textarea class="form-control" id="finish_comment" placeholder="Comentarios finales" rows="5" wire:model="finish_comment">
+                          </textarea>
+                        </div>
+                        @error('finish_comment') <span class="text-danger error">{{ $message }}</span>@enderror
+                    </div>
                 </form>
                 
             </div>

@@ -24,7 +24,8 @@ class Tickets extends Model
         'record',
         'comments',
         'status',
-        'user_id'
+        'user_id',
+        'finish_comment'
     ];
 
     public function office(){
@@ -45,5 +46,9 @@ class Tickets extends Model
 
     public function user(){
         return $this->belongsTo(User::class);
+    }
+
+    public function accused(){
+        return $this->hasMany(Accused::class, 'ticket_id', 'id');
     }
 }

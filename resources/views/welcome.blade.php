@@ -12,7 +12,7 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+        {{-- <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" /> --}}
         <neta name="csrf-token" content="{{ csrf_token() }}" />
         <link rel="stylesheet" href="css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
         @vite(['resources/js/app.js']) 
@@ -47,17 +47,27 @@
                 Echo.channel('tickets-number').listen('NewMessage', async (e) => {
                     const data = JSON.parse(e.message)
                     const ticket = data.ticket
+                    debugger
                     if (ticket === null){ 
                         $("#ticket-called #number b").text('')
                         $("#ticket-called #person b").text('')
                         $("#ticket-called #reason b").text('')
                     }
-
+                    
                     if (ticket){ 
+                        let peopleStr = '';
+
+                        if (ticket.people){
+                            peopleStr =  ticket.people.people_type.toUpperCase() + ' ' + ticket.people.id_card.toUpperCase() + ' ' + ticket.people.name.toUpperCase() + ' ' + ticket.people.lastname.toUpperCase()
+                        }else{
+                            peopleStr = ticket.accused[0].people.people_type.toUpperCase() + ' ' + ticket.accused[0].people.id_card.toUpperCase() + ' ' + ticket.accused[0].people.name.toUpperCase() + ' ' + ticket.accused[0].people.lastname.toUpperCase()
+                        }
+
+
                         $("#ticket-called #number b").text(ticket.ticket.toUpperCase())
-                        $("#ticket-called #person b").text(ticket.people.people_type.toUpperCase() + ' ' + ticket.people.id_card.toUpperCase() + ' ' + ticket.people.name.toUpperCase() + ' ' + ticket.people.lastname.toUpperCase())
-                        $("#ticket-called #reason b").text('MOTIVO: ' + ticket.reason.name.toUpperCase())
+                        $("#ticket-called #person b").text(peopleStr)
                         $("#ticket-called #record b").text('EXP N°: ' + ticket.record.toUpperCase())
+                        $("#ticket-called #reason b").text('MOTIVO: ' + ticket.reason.name.toUpperCase())
 
                         playAudio('{{asset('audio/ding-dong.mp3')}}')
                         //setTimeout(() => playAudio('{{asset('audio/ding-dong.mp3')}}'), 1000);

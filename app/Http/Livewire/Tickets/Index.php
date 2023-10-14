@@ -10,6 +10,7 @@ use App\Models\People;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use App\Events\NewMessage;
+use App\Models\Accused;
 use App\Models\Reason;
 
 class Index extends Component
@@ -20,6 +21,10 @@ class Index extends Component
     public $ticket_id,$ticket,$people_id,$office_id,$comments, $confirming, $user_id, $record,  $data, $reason_id, $finish_reason_id;
     public $name, $lastname,$gender,$people_type,$id_card,$address, $status;
     public $updateMode = false;
+    public $people, $accuseds;
+    public $peopleType;
+    public $offices;
+    public $reasons;    
     protected $listeners = ['updatePeopleId' => 'updateId',];
 
     public function updatingSearch(){
@@ -37,6 +42,11 @@ class Index extends Component
         $this->reason_id = '';
         $this->comments = '';
         $this->record = '';
+        $this->accuseds = [
+            ['people_id' => '']
+        ];
+        $this->updateMode = false;
+        $this->emit('applySelect2');
         $this->emit('resetSearchBoxField');
 
     }
@@ -51,20 +61,53 @@ class Index extends Component
         $this->status = 1;
     }
 
-    private function rules()
+    public function rules()
     {
-        $rules = [
-            'people_id' => 'required|numeric',
-            'office_id' => 'required|numeric',
-            'reason_id' => 'required|numeric',
-            'record' => 'required|max:15',
-        ];
+        $record = $this->record;
+
+        if(!$this->updateMode){
+            $rules = [
+                'office_id' => 'required|numeric',
+                'reason_id' => 'required|numeric',
+                'people_id' => ['required_without:accuseds'],
+                'record' => [
+                    'required',
+                    'max:50',
+                    Rule::unique('tickets')->where(function ($query) use ($record) {
+                        return $query
+                            ->whereDate('created_at', Carbon::today()->format('Y-m-d'))
+                            ->where('record', '=', $record)
+                            ->where('deleted_at', '=', null);
+                    }),
+                ],
+                
+            ];
+        } else {
+            $rules = [
+                'office_id' => 'required|numeric',
+                'reason_id' => 'required|numeric',
+                'people_id' => ['required_without:accuseds'],
+                'record' => [
+                    'required',
+                    'max:50',
+                    Rule::unique('tickets')
+                        ->ignore($this->record, 'record')
+                        ->where(function ($query) use ($record) {
+                            return $query
+                                ->whereDate('created_at', Carbon::today()->format('Y-m-d'))
+                                ->where('record', '=', $record)
+                                ->where('deleted_at', '=', null);
+                        }),
+                ],
+                
+            ];
+        }
 
         $messages = [
-            'people_id.required' => 'La persona es requerida',
             'office_id.required' => 'La oficina es requerida',
             'reason_id.required' => 'El motivo es requerido',
             'record.required' => 'El expediente es requerido',
+            'record.unique' => 'El expediente ya ha sido ingresado el dia de hoy',
             'record.max' => 'El expediente no puede superar los 15 caracteres',
         ];        
         
@@ -128,15 +171,24 @@ class Index extends Component
         $tickets = Tickets::whereDate('created_at', Carbon::today())->where('office_id', $this->office_id)->get();
         $this->ticket = Office::find($this->office_id)->name.'-'.(count($tickets) + 1);
         $this->user_id = auth()->guard()->user()->id;
-        Tickets::create([
+        $ticket = Tickets::create([
             'ticket' => $this->ticket,
             'user_id' => $this->user_id,
-            'people_id' => $this->people_id,
+            'people_id' => ($this->people_id ? $this->people_id : null),
             'office_id' => $this->office_id,
             'reason_id' => $this->reason_id,
             'record' => $this->record,
             'comments' => $this->comments ?? '',
         ]);
+
+        if($this->accuseds[0]['people_id']){
+            foreach($this->accuseds as $accused){
+                Accused::create([
+                    'people_id' => $accused['people_id'],
+                    'ticket_id' => $ticket['id']
+                ]);
+            }
+        }
 
         session()->flash('message', ['type' => 'success', 'title'=> 'Ticket creado exitosamente']);
         event(new NewMessage(json_encode(['update' => true]),'office-'.$this->office_id));
@@ -159,6 +211,11 @@ class Index extends Component
         $this->comments = $ticket->comments;
         $this->status = $ticket->status;
         $this->record = $ticket->record;
+        $this->accuseds = [];
+        $accuseds = Accused::where('ticket_id', $ticket->id)->get();
+        foreach($accuseds as $accused){
+             $this->accuseds[] = ['people_id' => $accused->people_id];   
+        }
         $this->emit('setSelect2Values', $this);
     }
 
@@ -171,11 +228,31 @@ class Index extends Component
     public function update()
     {   
         $rules = $this->rules();
-        $validatedTicket = $this->validate($rules['rules'], $rules['messages']);
+        if(empty($this->people_id)){
+            $this->people_id = NULL;
+        }
+        // dd($this->people_id);
+        $this->validate($rules['rules'], $rules['messages']);
         if ($this->ticket_id) {
             $ticket = Tickets::find($this->ticket_id);
-            $ticket->update($validatedTicket);
+            $ticketArr = [
+                'people_id' => $this->people_id,
+                'office_id' => $this->office_id,
+                'reason_id' => $this->reason_id,
+                'comments' => $this->comments,
+                'record' => $this->record,
+            ];
+            $ticket->update($ticketArr);
+            $ticket->accused()->delete();
             $this->updateMode = false;
+            if($this->accuseds[0]['people_id']){
+                foreach($this->accuseds as $accused){
+                    Accused::create([
+                        'people_id' => $accused['people_id'],
+                        'ticket_id' => $ticket['id']
+                    ]);
+                }
+            }
             session()->flash('message', ['type' => 'success', 'title'=> 'Ticket actualizado éxitosamente']);
             event(new NewMessage(json_encode(['update' => true]),'office-'.$this->office_id));
             event(new NewMessage(json_encode(['update' => true]),'tickets-list'));
@@ -202,20 +279,39 @@ class Index extends Component
         $this->delete($id);
     }
 
+    public function addAccused()
+    {
+        $index = sizeOf($this->accuseds);
+        $this->accuseds[$index] = ['people_id' => ''];
+        $this->emit('reApplySelect2', $index, $this->updateMode);
+    }
+    public function removeAccused($index)
+    {
+        unset($this->accuseds[$index]);
+        $this->accuseds = array_values($this->accuseds);
+    }
+
+    public function mount() {
+        $this->people = People::where('status','1')->get();
+        $this->peopleType = People::PEOPLE_TYPE;
+        $this->offices = Office::where('status','1')->get();
+        $this->reasons = Reason::where('status','1')->get();
+        $this->accuseds = [
+            ['people_id' => '']
+        ];
+    }
+
     public function render()
     {
         $search = $this->search;
-        $people = People::where('status','1')->get();
-        $peopleType = People::PEOPLE_TYPE;
-        $offices = Office::where('status','1')->get();
-        $reasons = Reason::where('status','1')->get();
         $tickets = Tickets::whereHas('people', function($query) use($search){
             return $query->where('name', 'like', '%'.$search.'%')
                         ->orWhere('lastname', 'like', '%'.$search.'%')
+                        ->orWhere('record', 'like', '%'.$search.'%')
                         ->orWhere('id_card', 'like', '%'.$search.'%');
         })
         ->orWhere('created_at','like', '%'. $search .'%')->orderBy('created_at','desc')->paginate();
-        return view('livewire.tickets.index', compact('tickets', 'people', 'offices', 'peopleType', 'reasons'));
+        return view('livewire.tickets.index', compact('tickets'));
     }
 
 }

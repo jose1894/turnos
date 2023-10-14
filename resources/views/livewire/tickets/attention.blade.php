@@ -26,79 +26,103 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
+                @if(auth()->user()->office !== null)
 
-                <div class="card-header">
-                    <input wire:model="search" class="form-control" placeholder="busqueda">
-                </div>
-                @if($tickets->count())
-                    <div class="card-body">
-                        <table class="table table-stripped">
-                            <thead>
-                                <th>#</th>
-                                <th>Fecha</th>
-                                <th>Ticket</th>
-                                <th>Persona</th>
-                                <th>Oficina</th>
-                                <th>Status</th>
-                                <th width="8%"></th>
-                            </thead>
-                            <tbody>
-                                @foreach ($tickets as $ticket)
-                                <tr>
-                                    <td>{{ $ticket->id }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($ticket->created_at)->format('d/m/Y h:i:s' ) }}</td>
-                                    <td>{{ $ticket->ticket }}</td>
-                                    <td>{{ $ticket->people->people_type .' '. $ticket->people->id_card .' '. $ticket->people->name . ' ' . $ticket->people->lastname }}</td>
-                                    <td>{{ $ticket->office->name }}</td>
-                                    <td>{{ App\Models\Tickets::STATUSES[$ticket->status] }}</td>
-                                    <td>
-                                        @can('tickets-attend')
-                                            @if($ticket->status === 'a')
-                                                <button wire:click="attend({{ $ticket->id }})" class="btn btn-primary btn-sm" data-placement="top" title="Atender">
-                                                    <i class="fa fa-bullhorn"></i>
-                                                </button>
+                    <div class="card-header">
+                        <input wire:model="search" class="form-control" placeholder="busqueda">
+                    </div>
+                    @if($tickets->count())
+                        <div class="card-body">
+                            <table class="table table-stripped">
+                                <thead>
+                                    <th>#</th>
+                                    <th>Fecha</th>
+                                    <th>Ticket</th>
+                                    <th>Persona</th>
+                                    <th>Oficina</th>
+                                    <th>Status</th>
+                                    <th width="8%"></th>
+                                </thead>
+                                <tbody>
+                                    @foreach ($tickets as $ticket)
+                                    <tr>
+                                        <td>{{ $ticket->id }}</td>
+                                        <td>
+                                            {{ \Carbon\Carbon::parse($ticket->created_at)->format('d/m/Y h:i:s' ) }} <br>
+                                            <label>Motivo</label> <br>
+                                            {{ $ticket->reason->name }}
+                                        </td>
+                                        <td>
+                                            {{ $ticket->ticket }}<br>
+                                            <label>Expediente</label> <br>
+                                            {{ $ticket->record }}
+                                        </td>
+                                        <td>
+                                            @if ($ticket->people)
+                                                {{ $ticket->people->people_type .' '. $ticket->people->id_card .' '. $ticket->people->name . ' ' . $ticket->people->lastname }} <br> 
+                                            @else
+                                                No asignado(a)<br>
                                             @endif
-                                        @endcan
-
-                                        @can('tickets-recall')
-                                            @if($ticket->status === 'b')
-                                                <button wire:click="recall({{ $ticket->id }})" class="btn btn-success btn-sm" data-placement="top" title="Llamar">
-                                                    <i class="fa fa-bullhorn"></i>
-                                                </button>
-                                            @endif
-                                        @endcan
-                                        
-                                        @can('tickets-finish')
-                                            @if($ticket->status === 'b')
-                                                <button wire:click="openFinishModal({{ $ticket->id }})" alt="Finalizar" class="btn btn-success btn-sm" data-placement="top" title="Finalizar" data-toggle="modal" data-target="#finishTicketModal">
-                                                    <i class="fa fa-forward"></i>
-                                                </button>
-                                            @endif
-                                        @endcan
-
-                                        @can('tickets-disattend')
-                                            @if($confirming===$ticket->id)
-                                                <button wire:click="kill({{ $ticket->id }})"
-                                                    class="btn btn-danger btn-sm">Seguro?</button>
-                                            @elseif ($ticket->status !== 's' && $ticket->status !== 'a' && $ticket->status !== 'c')
-                                                <button wire:click="confirmDelete({{ $ticket->id }})" class="btn btn-warning btn-sm">
-                                                    <i class="fas fa-trash-alt"></i>
+                                            <label>Inputado/V&iacute;ctima/Relacionado</label>
+                                            <ul>
+                                            @foreach ($ticket->accused as $accused)
+                                                <li>{{ $accused->people->name .' '. $accused->people->lastname }}                                            
+                                            @endforeach
+                                            </ul>
+                                            <label>Observaciones</label>
+                                            <p class="text-justify">{{ $ticket->comments }}</p>
+                                        </td>
+                                        <td>{{ $ticket->office->name }}</td>
+                                        <td>{{ App\Models\Tickets::STATUSES[$ticket->status] }}</td>
+                                        <td>
+                                            @can('tickets-attend')
+                                                @if($ticket->status === 'a')
+                                                    <button wire:click="attend({{ $ticket->id }})" class="btn btn-primary btn-sm" data-placement="top" title="Atender">
+                                                        <i class="fa fa-bullhorn"></i>
                                                     </button>
-                                            @endif
-                                        @endcan
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="card-footer">
-                        {{ $tickets->links() }}
-                    </div>
-                @else
-                    <div class="card-body">
-                        <strong>No hay registros</strong>
-                    </div>
+                                                @endif
+                                            @endcan
+
+                                            @can('tickets-recall')
+                                                @if($ticket->status === 'b')
+                                                    <button wire:click="recall({{ $ticket->id }})" class="btn btn-success btn-sm" data-placement="top" title="Llamar">
+                                                        <i class="fa fa-bullhorn"></i>
+                                                    </button>
+                                                @endif
+                                            @endcan
+                                            
+                                            @can('tickets-finish')
+                                                @if($ticket->status === 'b')
+                                                    <button wire:click="openFinishModal({{ $ticket->id }})" alt="Finalizar" class="btn btn-success btn-sm" data-placement="top" title="Finalizar" data-toggle="modal" data-target="#finishTicketModal">
+                                                        <i class="fa fa-forward"></i>
+                                                    </button>
+                                                @endif
+                                            @endcan
+
+                                            @can('tickets-disattend')
+                                                @if($confirming===$ticket->id)
+                                                    <button wire:click="kill({{ $ticket->id }})"
+                                                        class="btn btn-danger btn-sm">Seguro?</button>
+                                                @elseif ($ticket->status !== 's' && $ticket->status !== 'a' && $ticket->status !== 'c')
+                                                    <button wire:click="confirmDelete({{ $ticket->id }})" class="btn btn-warning btn-sm">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                        </button>
+                                                @endif
+                                            @endcan
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer">
+                            {{ $tickets->links() }}
+                        </div>
+                    @else
+                        <div class="card-body">
+                            <strong>No hay registros</strong>
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
@@ -106,7 +130,10 @@
 
     <script>
         document.addEventListener('livewire:load', function () {
-            $('select').select2()
+            $('select').select2({
+                placeholder: "Seleccione",
+                allowClear: true
+            })
             {{-- $('#office').select2() --}}
 
             $('#finish_reason_id').on('change', function (e) {
