@@ -25,6 +25,7 @@ class Index extends Component
     public $peopleType;
     public $offices;
     public $reasons;    
+    public $prosecutorOffices;
     protected $listeners = ['updatePeopleId' => 'updateId',];
 
     public function updatingSearch(){
@@ -299,6 +300,7 @@ class Index extends Component
         $this->accuseds = [
             ['people_id' => '']
         ];
+        $this->prosecutorOffices = Office::where('prosecutor', 'S')->get();
     }
 
     public function render()

@@ -59,6 +59,27 @@
                         </textarea>
                         @error('address') <span class="text-danger error">{{ $message }}</span>@enderror
                     </div>
+                    <div class="form-group row">
+                      <div class="col-12 col-md-6">
+                          <label for="prosecutor">Fiscal</label>
+                          <select name="prosecutor" class="form-control" placeholder="Seleccione" wire:model="prosecutor">
+                            <option>
+                            <option value="S" selected>S&Iacute;
+                            <option value="N">NO
+                          </select>
+                          @error('prosecutor') <span class="text-danger error">{{ $message }}</span>@enderror
+                      </div>
+                      <div class="col-12 col-md-6">
+                          <label for="">Oficina de fiscal&iacute;a</label>
+                          <select name="prosecutor_office" class="form-control" placeholder="Seleccione" wire:model="prosecutor_office">
+                            <option>
+                            @foreach ($prosecutorOffices as $office)
+                              <option value="{{$office->id}}">{{ $office->name}}
+                            @endforeach
+                          </select>
+                          @error('prosecutor_office') <span class="text-danger error">{{ $message }}</span>@enderror
+                      </div>
+                    </div>
                     <div class="form-group">
                         <label for="exampleFormControlInput2">Estatus</label>
                         <select name="status" class="form-control" placeholder="Seleccione" wire:model="status">

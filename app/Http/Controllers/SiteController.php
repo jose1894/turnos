@@ -13,4 +13,11 @@ class SiteController extends Controller
         ->where('created_at','like', '%'. date('y-m-d') .'%')->paginate();
         return view('welcome', compact('tickets'));
     }
+    
+    public function prosecutors(){
+        $tickets = Tickets::whereHas('prosecutor')
+        ->where('status', '=', 'b')
+        ->where('created_at','like', '%'. date('y-m-d') .'%')->paginate();
+        return view('prosecutors', compact('tickets'));
+    }
 }

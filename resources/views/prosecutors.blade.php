@@ -38,7 +38,7 @@
                 @endif
             </div>
 
-            @livewire('tickets')
+            @livewire('tickets-prosecutor')
             
         </div>
         <script type="module">
@@ -53,31 +53,26 @@
                         audio.src = url
                     });
                 }
-                Echo.channel('tickets-number').listen('NewMessage', async (e) => {
+                Echo.channel('prosecutor-tickets-number').listen('NewMessage', async (e) => {
                     const data = JSON.parse(e.message)
                     const ticket = data.ticket
-                    
+                    //debugger
                     if (ticket === null){ 
                         $("#ticket-called #number b").text('')
-                        $("#ticket-called #person b").text('')
+                        $("#ticket-called #prosecutor b").text('')
                         $("#ticket-called #reason b").text('')
                     }
                     
                     if (ticket){ 
                         let peopleStr = '';
-
-                        if (ticket.people){
-                            peopleStr =  ticket.people.people_type.toUpperCase() + ' ' + ticket.people.id_card.toUpperCase() + ' ' + ticket.people.name.toUpperCase() + ' ' + ticket.people.lastname.toUpperCase()
-                        }else{
-                            peopleStr = ticket.accused[0].people.people_type.toUpperCase() + ' ' + ticket.accused[0].people.id_card.toUpperCase() + ' ' + ticket.accused[0].people.name.toUpperCase() + ' ' + ticket.accused[0].people.lastname.toUpperCase()
-                        }
-
-
+                        peopleStr =  ticket.prosecutor.people_type.toUpperCase() + ' ' + ticket.prosecutor.id_card.toUpperCase() + ' ' + ticket.prosecutor.name.toUpperCase() + ' ' + ticket.prosecutor.lastname.toUpperCase()
+                        
                         $("#ticket-called #number b").text(ticket.ticket.toUpperCase())
-                        $("#ticket-called #person b").text(peopleStr)
+                        $("#ticket-called #prosecutor b").text(peopleStr)
                         $("#ticket-called #record b").text('EXP N°: ' + ticket.record.toUpperCase())
                         $("#ticket-called #reason b").text('MOTIVO: ' + ticket.reason.name.toUpperCase())
-                        const audioUrl = '{{asset('audio/doorbell.mp3')}}';
+
+                        const audioUrl = '{{asset('audio/ding-dong.mp3')}}';
                         playSound(audioUrl)
                             .finally(()=> {
                                 setTimeout(playSound(audioUrl),1300)
@@ -87,12 +82,9 @@
                 Echo.channel('tickets-list').listen('NewMessage', (e) => {
                     Livewire.emit('refreshTicketsListComponent');
                 })
-                Echo.channel('attending-tickets').listen('NewMessage', async (e) => {                    
-                    Livewire.emit('refreshAttendingTicketsComponent');
+                Echo.channel('prosecutor-attending-tickets').listen('NewMessage', async (e) => {                    
+                    Livewire.emit('refreshProsecutorAttendingTicketsComponent');
                 })
-
-                
-
         </script>
         <style>
             .ticket-attend{
@@ -103,7 +95,7 @@
                 font-size: 90px;
                 margin: 0 auto;
                 text-align: center;
-            }            
+            }
         </style>
         <!-- Livewire -->
         @livewireScripts

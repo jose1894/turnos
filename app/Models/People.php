@@ -23,6 +23,8 @@ class People extends Model
         'gender',
         'people_type',
         'id_card',
+        'prosecutor',
+        'prosecutor_office',
         'address',
         'status'
     ];

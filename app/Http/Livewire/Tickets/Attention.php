@@ -21,7 +21,7 @@ class Attention extends Component
     public $ticket_id, $finish_reason_id, $confirming, $finish_comment;
     public $name, $lastname,$gender,$people_type,$id_card,$address, $status;
     public $updateMode = false;
-    public $people, $peopleType, $offices, $finishReasons, $officeUser;
+    public $people, $peopleType, $offices, $finishReasons, $officeUser, $prosecutor_id, $prosecutors;
     protected $listeners = ['refreshAttentionComponent' => '$refresh'];
 
     public function disattend($id)
@@ -66,6 +66,34 @@ class Attention extends Component
         event(new NewMessage(json_encode(['process' => 'attend']),'attending-tickets'));
         event(new NewMessage(json_encode(['ticket' => $ticket]),'tickets-number'));
         $this->emit('refreshAttentionComponent');
+    }
+    
+    public function callProsecutor($id){
+        $ticket = Tickets::where('id',$id)->with(['people', 'office', 'reason', 'accused.people', 'prosecutor'])->first();
+        session()->flash('message', ['type' => 'info', 'title'=> 'Llamado nuevamente']);
+        event(new NewMessage(json_encode(['ticket' => $ticket]),'prosecutor-tickets-number'));
+        event(new NewMessage(json_encode(['process' => 'attend']),'prosecutor-attending-tickets'));
+    }
+    
+    public function assignProsecutor($id){
+        $this->validate([
+            'prosecutor_id' => ['required','numeric'],
+        ],
+        [
+            'prosecutor_id.required' => 'El fiscal es requerido',
+        ]);
+
+        $ticket = Tickets::where('id', $id)->with(['people', 'office', 'reason', 'accused.people', 'prosecutor'])->first();
+        $ticket->update(['prosecutor_id' => $this->prosecutor_id]);
+        session()->flash('message', ['type' => 'info', 'title'=> 'Fiscal asignado']);
+        event(new NewMessage(json_encode(['ticket' => $ticket]),'prosecutor-tickets-number'));
+        event(new NewMessage(json_encode(['process' => 'attend']),'prosecutor-attending-tickets'));
+        $this->emit('assignProsecutor');
+    }
+
+    public function openProsecutorModal($id){
+        $this->prosecutor_id = '';
+        $this->ticket_id = $id;
     }
 
     public function openFinishModal($id){
@@ -114,10 +142,12 @@ class Attention extends Component
 
     public function mount(){
         $this->people = People::where('status','1')->get();
+        $this->prosecutors = People::where('status','1')->where('prosecutor','S')->get();
         $this->peopleType = People::PEOPLE_TYPE;
         $this->offices = Office::where('status','1')->get();
         $this->finishReasons = FinishReason::where('status','1')->get();
         $this->officeUser = auth()->guard()->user()->office->id ?? null;
+        $this->prosecutor_id = "";
     }
 
     

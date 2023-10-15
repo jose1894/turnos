@@ -14,6 +14,8 @@
         @include('livewire.tickets.finalize')
     @endcan
 
+    @include('livewire.tickets.prosecutor-modal')
+
     <div>
         @if (session()->has('message'))
             <script>
@@ -38,10 +40,10 @@
                                     <th>#</th>
                                     <th>Fecha</th>
                                     <th>Ticket</th>
-                                    <th>Persona</th>
+                                    <th>Detalles</th>
                                     <th>Oficina</th>
                                     <th>Status</th>
-                                    <th width="8%"></th>
+                                    <th width="15%"></th>
                                 </thead>
                                 <tbody>
                                     @foreach ($tickets as $ticket)
@@ -59,18 +61,30 @@
                                         </td>
                                         <td>
                                             @if ($ticket->people)
-                                                {{ $ticket->people->people_type .' '. $ticket->people->id_card .' '. $ticket->people->name . ' ' . $ticket->people->lastname }} <br> 
+                                                {{ $ticket->people->people_type .' '. $ticket->people->id_card .' '. $ticket->people->name . ' ' . $ticket->people->lastname }}
                                             @else
-                                                No asignado(a)<br>
+                                                No asignado(a)
                                             @endif
+                                            <br>
                                             <label>Inputado/V&iacute;ctima/Relacionado</label>
                                             <ul>
-                                            @foreach ($ticket->accused as $accused)
-                                                <li>{{ $accused->people->name .' '. $accused->people->lastname }}                                            
-                                            @endforeach
+                                                @foreach ($ticket->accused as $accused)
+                                                    <li>{{ $accused->people->name .' '. $accused->people->lastname }}                                            
+                                                @endforeach
                                             </ul>
-                                            <label>Observaciones</label>
-                                            <p class="text-justify">{{ $ticket->comments }}</p>
+
+                                            @if ($ticket->prosecutor)
+                                                <label>Fiscal</label><br>
+                                                {{$ticket->prosecutor->people_type.$ticket->prosecutor->id_card .' '. $ticket->prosecutor->name .' ' .$ticket->prosecutor->lastname }}
+                                                 <br>
+                                                 <br>
+                                            @endif
+
+                                            @if ($ticket->comments)
+                                                <label>Observaciones</label>
+                                                <p class="text-justify">{{ $ticket->comments }}</p>
+                                            @endif
+
                                         </td>
                                         <td>{{ $ticket->office->name }}</td>
                                         <td>{{ App\Models\Tickets::STATUSES[$ticket->status] }}</td>
@@ -88,6 +102,17 @@
                                                     <button wire:click="recall({{ $ticket->id }})" class="btn btn-success btn-sm" data-placement="top" title="Llamar">
                                                         <i class="fa fa-bullhorn"></i>
                                                     </button>
+                                                
+                                                    <button  class="btn btn-primary btn-sm" wire:click="openProsecutorModal({{ $ticket->id }})" data-placement="top" title="Asignar Fiscal" data-toggle="modal" data-target="#prosecutorModal">
+                                                        <i class="fa fa-user"></i>
+                                                    </button>
+
+                                                    @if ($ticket->prosecutor)
+                                                        <button wire:click="callProsecutor({{$ticket->id}})" class="btn btn-warning btn-sm" title="Llamar a fiscal">
+                                                            <i class="fas fa-exclamation"></i> 
+                                                            <i class="fa fa-bullhorn fa-flip-horizontal"></i>
+                                                        </button>
+                                                    @endif
                                                 @endif
                                             @endcan
                                             
@@ -134,11 +159,15 @@
                 placeholder: "Seleccione",
                 allowClear: true
             })
-            {{-- $('#office').select2() --}}
 
             $('#finish_reason_id').on('change', function (e) {
                 var data = $('#finish_reason_id').select2("val");
                 @this.set('finish_reason_id', data);
+            });
+
+            $('#prosecutor_id').on('change', function (e) {
+                var data = $('#prosecutor_id').select2("val");
+                @this.set('prosecutor_id', data);
             });
 
             Livewire.on('setSelect2Values', (record) => {

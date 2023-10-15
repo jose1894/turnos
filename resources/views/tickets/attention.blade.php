@@ -62,9 +62,12 @@ $(function () {
 
   window.livewire.on('finishTicket', () => {
           $('#finishTicketModal .close-btn').trigger('click');
-          
           $('#finish_reason_id').val(null).trigger('change.select2');
-     
+  });
+  window.livewire.on('assignProsecutor', () => {
+    //debugger
+          $('#prosecutorModal .close-btn').trigger('click');
+          $('#prosecutor_id').val(null).trigger('change.select2');
   });
 </script>
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\People;
 
+use App\Models\Office;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\People;
@@ -12,10 +13,12 @@ class Index extends Component
     use WithPagination;
     public $search;
     public $people_id,$name,$lastname,$gender,$people_type,$id_card,$address, $status, $confirming;
+    public $prosecutor, $prosecutor_office;
     public $updateMode = false;
+    public $prosecutorOffices = [];
     protected $paginationTheme = 'bootstrap';
 
-    private function rules(){
+    public function rules(){
         
         $request = $this;
         if ( $this->updateMode ){
@@ -32,7 +35,9 @@ class Index extends Component
                     ->where('people_type', $request->people_type);
                 })->ignore($request->people_id)],
                 'address' => 'required',
-                'status' => 'required|numeric',
+                'status' => 'required|numeric', 
+                'prosecutor' => 'nullable', 
+                'prosecutor_office' => 'nullable', 
             ];
     
         }  else {
@@ -50,6 +55,8 @@ class Index extends Component
                 })],
                 'address' => 'required',
                 'status' => 'required|numeric',
+                'prosecutor' => 'nullable', 
+                'prosecutor_office' => 'nullable', 
             ];
         }
 
@@ -80,6 +87,8 @@ class Index extends Component
         $this->id_card = '';
         $this->address = '';
         $this->status = 1;
+        $this->prosecutor = 'N';
+        $this->prosecutor_office = '';
     }
 
     public function storePeople()
@@ -110,6 +119,8 @@ class Index extends Component
         $this->id_card = $people->id_card;
         $this->address = $people->address;
         $this->status = $people->status;
+        $this->prosecutor = $people->prosecutor;
+        $this->prosecutor_office = $people->prosecutor_office;
         
     }
 
@@ -151,6 +162,10 @@ class Index extends Component
     public function kill($id)
     {
         $this->delete($id);
+    }
+
+    public function mount(){
+        $this->prosecutorOffices = Office::where('prosecutor', 'S')->get();
     }
 
     public function render()
