@@ -35,7 +35,7 @@ class Index extends Component
     {
         $validationRules = [
             'name' => 'required|unique:offices|min:5|max:20',
-            'type' => 'required_without:prosecutor|numeric',
+            'type' => 'required_without:prosecutor|numeric|nullable',
             'status' => 'required|numeric',            
             'prosecutor' => 'required_without:type',
         ];
