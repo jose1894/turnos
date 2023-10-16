@@ -49,7 +49,6 @@ class Index extends Component
         ];
 
         $this->validate($validationRules, $validationMessages);
-        dd($this->prosecutor);
         Office::create([
             'name' => $this->name,
             'type' => $this->type,
