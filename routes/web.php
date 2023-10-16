@@ -25,6 +25,7 @@ Route::get('/',[SiteController::class, 'index']);
 
 Auth::routes();
 
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/prosecutors', [SiteController::class, 'prosecutors'])->name('prosecutors');
 
 Route::middleware('auth')->group(function () {
