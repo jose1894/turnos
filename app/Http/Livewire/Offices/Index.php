@@ -35,7 +35,7 @@ class Index extends Component
     {
         $validationRules = [
             'name' => 'required|unique:offices|min:5|max:20',
-            'type' => 'required_without:prosecutor|numeric|nullable',
+            'type' => 'required_without:prosecutor|nullable',
             'status' => 'required|numeric',            
             'prosecutor' => 'required_without:type',
         ];
@@ -47,11 +47,16 @@ class Index extends Component
             'name.unique' => 'El nombre ya ha sido usado',
             'prosecutor.required' => 'Fiscalia es requerido',
         ];
-
+        if(empty($this->type)){
+            $this->type = NULL;
+        }
+        if(empty($this->prosecutor)){
+            $this->prosecutor = NULL;
+        }
         $this->validate($validationRules, $validationMessages);
         Office::create([
             'name' => $this->name,
-            'type' => $this->type,
+            'type' => $this->type ?? NULL,
             'status' => $this->status,
             'prosecutor' => $this->prosecutor ?? NULL,
         ]);
@@ -69,6 +74,7 @@ class Index extends Component
         $office = Office::where('id',$id)->first();
         $this->office_id = $id;
         $this->name = $office->name;
+        $this->prosecutor = $office->prosecutor;
         $this->type = $office->type;
         $this->status = $office->status;
     }
@@ -97,13 +103,19 @@ class Index extends Component
         ];
 
         $this->validate($validationRules, $validationMessages);
+        if(empty($this->type)){
+            $this->type = NULL;
+        }
+        if(empty($this->prosecutor)){
+            $this->prosecutor = 'N';
+        }
 
         if ($this->office_id) {
             $office = Office::find($this->office_id);
             $office->name = $this->name;
-            $office->type = $this->type ?? NULL;
+            $office->type = $this->type;
             $office->status = $this->status;
-            $office->prosecutor = $this->prosecutor ?? NULL;
+            $office->prosecutor = $this->prosecutor;
             $office->update();
             $this->updateMode = false;
             session()->flash('message', ['type' => 'success', 'title'=> 'Oficina actualizada exitosamente']);
