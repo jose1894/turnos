@@ -62,19 +62,29 @@
                       <table class="table">
                           <thead>
                             <tr>
-                              <td width="90%"><label>Inputado/V&iacute;ctima/Relacionado</label></td>
+                              <td width="80%"><label>Imputado/V&iacute;ctima/Relacionado</label></td>
                               <td>
-                                <button 
+                                <a 
+                                  title="Agregar persona"
+                                  data-toggle="modal" 
+                                  href="#createPeopleModal" 
+                                  class="btn btn-sm btn-outline-primary" 
+                                  wire:emit="resetPeopleInputFields"> 
+                                  <i class="fa fa-user-circle" aria-hidden="true"></i> 
+                                  <i class="fa fa-plus-circle" aria-hidden="true"></i> 
+                                </a> |
+                                <a 
+                                  title="Agregar imputado"
                                   class="btn btn-sm btn-outline-success" 
-                                  wire:click.prevent="addAccused">+ Agregar
-                                </button>
+                                  wire:click.prevent="addAccused"><i class="fa fa-plus-circle" aria-hidden="true"></i> Agregar
+                                </a>
                               </td>
                             </tr>
                           </thead>
                           <tbody>
                             @foreach ($accuseds as $index => $accused)
                               <tr>
-                                <td>
+                                <td> 
                                     <div wire:ignore>
                                       <select 
                                         class="form-control select2bs4 accuseds-edt accuseds-edt-{{$index}}-people_id" 
@@ -83,16 +93,15 @@
                                         placeholder="Seleccione" 
                                         wire:model="accuseds.{{$index}}.people_id"
                                         name="accuseds[{{$index}}][people_id]">
-                                        <option>
-                                        @foreach ($people as $person)
-                                            <option value="{{$person->id}}">{{$person->people_type.$person->id_card}}-{{$person->name}} {{$person->lastname}}
-                                        @endforeach
+                                            @if(!empty($accused))
+                                              <option value="{{$accused['people_id']}}">{{$accused['people_type'].$accused['id_card']}}-{{$accused['name']}} {{$accused['lastname']}}
+                                            @endif
                                       </select>
                                        @error('accuseds.{{$index}}.person_id') <span class="text-danger error">{{ $message }}</span>@enderror
                                     </div>
                                 </td>
                                 <td>
-                                  <button class="btn btn-outline-danger" wire:click.prevent="removeAccused({{$index}})">Borrar</button>
+                                  <button class="btn btn-outline-danger btn-block" wire:click.prevent="removeAccused({{$index}})">Borrar</button>
                                 </td>
                               </tr>
                             @endforeach

@@ -29,6 +29,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/prosecutors', [SiteController::class, 'prosecutors'])->name('prosecutors');
 
 Route::middleware('auth')->group(function () {
+    Route::get('get-people', [PeopleController::class, 'getPeople'])->name('get-people');
     Route::get('roles', [RoleController::class, 'index']);
     Route::resource('users', UserController::class)->names('users');
     Route::resource('offices', OfficeController::class)->names('offices');

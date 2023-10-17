@@ -21,7 +21,7 @@ class Index extends Component
     public $ticket_id,$ticket,$people_id,$office_id,$comments, $confirming, $user_id, $record,  $data, $reason_id, $finish_reason_id;
     public $name, $lastname,$gender,$people_type,$id_card,$address, $status;
     public $updateMode = false;
-    public $people, $accuseds;
+    public $people, $accuseds, $accuseds_edt;
     public $peopleType;
     public $offices;
     public $reasons;    
@@ -44,7 +44,7 @@ class Index extends Component
         $this->comments = '';
         $this->record = '';
         $this->accuseds = [
-            ['people_id' => '']
+            ['people_id' => '', 'people_type' => '', 'id_card' => '', 'name' => '', 'lastname' => '']
         ];
         $this->updateMode = false;
         $this->emit('applySelect2');
@@ -65,7 +65,6 @@ class Index extends Component
     public function rules()
     {
         $record = $this->record;
-
         if(!$this->updateMode){
             $rules = [
                 'office_id' => 'required|numeric',
@@ -90,7 +89,7 @@ class Index extends Component
                 'people_id' => ['required_without:accuseds'],
                 'record' => [
                     'required',
-                    'max:50',
+                    'max:30',
                     Rule::unique('tickets')
                         ->ignore($this->record, 'record')
                         ->where(function ($query) use ($record) {
@@ -165,9 +164,15 @@ class Index extends Component
 
     public function storeTicket()
     {
+        
         $rules = $this->rules();
         
         $this->validate($rules['rules'], $rules['messages']);
+
+        if(empty($this->accuseds) || empty($this->accuseds[0]['people_id'])){
+            session()->flash('message', ['type' => 'error', 'title'=> 'Debe seleccionar un imputado/victima/vinculado']);
+            return;
+        }
 
         $tickets = Tickets::whereDate('created_at', Carbon::today())->where('office_id', $this->office_id)->get();
         $this->ticket = Office::find($this->office_id)->name.'-'.(count($tickets) + 1);
@@ -182,7 +187,8 @@ class Index extends Component
             'comments' => $this->comments ?? '',
         ]);
 
-        if($this->accuseds[0]['people_id']){
+        if(sizeOf($this->accuseds) > 0){
+            
             foreach($this->accuseds as $accused){
                 Accused::create([
                     'people_id' => $accused['people_id'],
@@ -215,7 +221,7 @@ class Index extends Component
         $this->accuseds = [];
         $accuseds = Accused::where('ticket_id', $ticket->id)->get();
         foreach($accuseds as $accused){
-             $this->accuseds[] = ['people_id' => $accused->people_id];   
+             $this->accuseds[] = ['people_id' => $accused->people_id, 'people_type' => $accused->people->people_type, 'id_card' => $accused->people->id_card, 'name' => $accused->people->name, 'lastname' => $accused->people->lastname];   
         }
         $this->emit('setSelect2Values', $this);
     }
@@ -232,8 +238,12 @@ class Index extends Component
         if(empty($this->people_id)){
             $this->people_id = NULL;
         }
-        // dd($this->people_id);
         $this->validate($rules['rules'], $rules['messages']);
+
+        if(empty($this->accuseds) || empty($this->accuseds[0]['people_id'])){
+            session()->flash('message', ['type' => 'error', 'title'=> 'Debe seleccionar un imputado/victima/vinculado']);
+            return;
+        }
         if ($this->ticket_id) {
             $ticket = Tickets::find($this->ticket_id);
             $ticketArr = [
@@ -283,13 +293,14 @@ class Index extends Component
     public function addAccused()
     {
         $index = sizeOf($this->accuseds);
-        $this->accuseds[$index] = ['people_id' => ''];
+        $this->accuseds[$index] = ['people_id' => '', 'people_type' => '', 'id_card' => '', 'name' => '', 'lastname' => ''];
         $this->emit('reApplySelect2', $index, $this->updateMode);
     }
     public function removeAccused($index)
     {
         unset($this->accuseds[$index]);
         $this->accuseds = array_values($this->accuseds);
+        $this->emit('setSelect2Values', $this);
     }
 
     public function mount() {
@@ -297,9 +308,7 @@ class Index extends Component
         $this->peopleType = People::PEOPLE_TYPE;
         $this->offices = Office::where('status','1')->get();
         $this->reasons = Reason::where('status','1')->get();
-        $this->accuseds = [
-            ['people_id' => '']
-        ];
+        $this->accuseds[] = ['people_id' => '', 'people_type' => '', 'id_card' => '', 'name' => '', 'lastname' => ''];
         $this->prosecutorOffices = Office::where('prosecutor', 'S')->get();
     }
 

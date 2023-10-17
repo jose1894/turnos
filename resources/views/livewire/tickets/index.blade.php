@@ -143,7 +143,7 @@
             });
 
             $('body').on('change','.accuseds-edt', function (e) { 
-                var data = $(this).select2("val");
+                var data = $(this).val();
                 @this.set(this.id, data);
             });
 
@@ -167,18 +167,57 @@
                 @this.set('reason_id', data);
             });
 
+
             Livewire.on('setSelect2Values', (record) => {
                 $('#people_edt').val(record.people_id).trigger('change.select2');
                 $('#office_edt').val(record.office_id).trigger('change.select2');
                 $('#reason_edt').val(record.reason_id).trigger('change.select2');
                 
                 $.each(record.accuseds, function(index, value){
+                    console.log(value)
                     let element = document.querySelector('.accuseds-edt-'+index+'-people_id')
-                    $(element).val(value.people_id).trigger('change.select2');
-                    $(element).select2();
+                    const text = value.people_type + value.id_card + '-' + value.name + ' ' + value.lastname;
+                    const id = value.people_id;
+                    $(element).empty();
+                    $(element).append(new Option(text, id));
+                    $(element).select2({
+                        ajax:{
+                            url: '{{ route('get-people') }}',
+                            dataType: 'json',
+                            delay:50,
+                            data: function(params){
+                                return {
+                                    searchItem: params.term
+                                }
+                            },
+                            processResults:function (data, params) {
+                                return {
+                                    results: data.data
+                                }
+                            },
+                            cache: true,
+                        },
+                        'placeholder': 'Seleccione',
+                        templateResult: templateResult,
+                        templateSelection: templateSelection
+                    })
+                    $(element).select2('data', { id, text} )
+                    {{-- .val(value.people_id).trigger('change.select2') --}}
                 })
             });
-            
+
+
+            function templateResult(data){
+                if(data.loading) return data.text;
+                return data.people_type + data.id_card + ' ' + data.name + ' ' + data.lastname;
+            }
+
+            function templateSelection(data){
+                if(data.selected){
+                    return data.text
+                }
+                return data.people_type + data.id_card + ' ' + data.name + ' ' + data.lastname
+            }
         })
     </script>
 

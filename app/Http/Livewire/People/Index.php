@@ -165,7 +165,7 @@ class Index extends Component
     }
 
     public function mount(){
-        $this->prosecutorOffices = Office::where('prosecutor', 'S')->get();
+        $this->prosecutorOffices = Office::where('prosecutor', 'S')->where('status', 1)->get();
     }
 
     public function render()

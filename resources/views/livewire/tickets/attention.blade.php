@@ -66,7 +66,7 @@
                                                 No asignado(a)
                                             @endif
                                             <br>
-                                            <label>Inputado/V&iacute;ctima/Relacionado</label>
+                                            <label>Imputado/V&iacute;ctima/Relacionado</label>
                                             <ul>
                                                 @foreach ($ticket->accused as $accused)
                                                     <li>{{ $accused->people->name .' '. $accused->people->lastname }}                                            

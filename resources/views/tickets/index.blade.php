@@ -64,16 +64,94 @@
                 placeholder: "Seleccione",
                 allowClear: true
             });
-            $(accuseds).select2();
+
+            $(accuseds).select2({
+                ajax:{
+                    url: '{{ route('get-people') }}',
+                    dataType: 'json',
+                    delay:50,
+                    data: function(params){
+                        return {
+                            searchItem: params.term
+                        }
+                    },
+                    processResults:function (data, params) {
+                        return {
+                            results: data.data
+                        }
+                    },
+                    cache: true,
+                },
+                'placeholder': 'Seleccione',
+                templateResult: templateResult,
+                templateSelection: templateSelection
+            });
         });
+
+        function templateResult(data){
+            if(data.loading){
+                return data.text
+            }
+
+            return data.people_type + data.id_card + ' ' + data.name + ' ' + data.lastname
+
+        }
+
+        function templateSelection(data){
+            console.log('select')
+            if(!data.people_type) return data.text
+            
+            return data.people_type + data.id_card + ' ' + data.name + ' ' + data.lastname
+
+        }
 
         window.livewire.on('reApplySelect2', (index, updateMode) => {
             if (updateMode){
                 let element = document.querySelector('.accuseds-edt-'+index+'-people_id')
-                $(element).select2();
+                $(element).select2({
+                    ajax:{
+                        url: '{{ route('get-people') }}',
+                        dataType: 'json',
+                        delay:50,
+                        data: function(params){
+                            return {
+                                searchItem: params.term
+                            }
+                        },
+                        processResults:function (data, params) {
+                            return {
+                                results: data.data
+                            }
+                        },
+                        cache: true,
+                    },
+                    'placeholder': 'Seleccione',
+                    templateResult: templateResult,
+                    templateSelection: templateSelection
+                });
             }else{
                 let element = document.getElementById('accuseds.'+index+'.people_id')
-                $(element).select2();
+                $(element).select2({
+                    ajax:{
+                        url: '{{ route('get-people') }}',
+                        dataType: 'json',
+                        delay:50,
+                        data: function(params){
+                            return {
+                                searchItem: params.term
+                            }
+                        },
+                        processResults:function (data, params) {
+                            return {
+                                results: data.data
+                            }
+                        },
+                        cache: true,
+                    },
+                    'placeholder': 'Seleccione',
+                    templateResult: templateResult,
+                    templateSelection: templateSelection
+                });
             }
         });
     </script>

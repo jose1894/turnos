@@ -40,7 +40,7 @@
     <div class="input-group">
         <input type='text' class="form-control" wire:model="search" wire:keyup="searchResult">
         <div class="input-group-append">
-            <a data-toggle="modal" href="#createPeopleModal" class="btn btn-outline-success" wire:emit="resetPeopleInputFields"> <i class="fa fa-plus-circle" aria-hidden="true"></i> </a>
+            <a data-toggle="modal" href="#createPeopleModal" class="btn btn-outline-primary" wire:emit="resetPeopleInputFields"> <i class="fa fa-plus-circle" aria-hidden="true"></i> </a>
         </div>
     </div>
     <div class="search-box">
